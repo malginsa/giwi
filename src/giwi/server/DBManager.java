@@ -22,6 +22,7 @@ public class DBManager {
 			sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceReader);
 			sqlSessionFactory.getConfiguration().addMapper(ClientMapper.class);
 			sqlSessionFactory.getConfiguration().addMapper(AccountMapper.class);
+			sqlSessionFactory.getConfiguration().addMapper(TransactionMapper.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -74,12 +75,43 @@ public class DBManager {
 		}
 	}
 
-	public static void decreaseBalance(String fromCard, Integer amount) {
+	public static void changeBalance(String fromCard, Integer amount) {
 		SqlSession session = sqlSessionFactory.openSession();
 		try {
 			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			Integer result = mapper.decreaseBalance(fromCard, amount);
-			if (0 == result) {
+			Integer result = mapper.changeBalance(fromCard, amount); 
+			session.commit();
+			if (1 != result) {
+				throw new IllegalArgumentException(
+					"Операция отклонена: сбой в системе...");
+			}
+		} finally {
+			session.close();
+		}
+	}
+
+	public static void storeTransaction(Transaction transaction) {
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			TransactionMapper mapper = session.getMapper(TransactionMapper.class);
+			Integer result = mapper.storeTransaction(transaction);
+			session.commit();
+			if (1 != result) {
+				throw new IllegalArgumentException(
+					"Операция отклонена: транзакция не выполнена...");
+			}
+		} finally {
+			session.close();
+		}
+	}
+
+	public static void doBlockCard(String cardNumber) {
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			AccountMapper mapper = session.getMapper(AccountMapper.class);
+			Integer result = mapper.blockCard(cardNumber); 
+			session.commit();
+			if (1 != result) {
 				throw new IllegalArgumentException(
 					"Операция отклонена: сбой в системе...");
 			}

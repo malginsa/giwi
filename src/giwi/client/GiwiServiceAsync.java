@@ -21,4 +21,10 @@ public interface GiwiServiceAsync {
 	void sendTransaction(Integer idClient, String fromCard, 
 			String toCard, Integer amount, AsyncCallback<Void> callback);
 
+	void sendIncrement(Integer uuid, String cardNumber, Integer amount,
+			AsyncCallback<Void> asyncCallback);
+
+	void sendBlockCard(Integer uuid, String cardNumber, 
+			AsyncCallback<Void> asyncCallback);
+
 }

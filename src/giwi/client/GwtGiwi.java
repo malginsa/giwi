@@ -41,7 +41,7 @@ public class GwtGiwi implements EntryPoint {
 
 	}
 
-	private void transactionMenu(final String cardNumber) {
+	private void transactionPanel(final String cardNumber) {
 		RootPanel.get().clear();
 		RootPanel.get().add(new Label("Добрый день, " + clientName));
 		RootPanel.get().add(new Label("Карта номер  " + cardNumber));
@@ -63,7 +63,6 @@ public class GwtGiwi implements EntryPoint {
 				public void onClick(ClickEvent event) {
 					doTransaction(cardNumber, toCardNumberTextBox.getText(), 
 							Integer.valueOf(amountTextBox.getText()));
-					cardOperations(cardNumber);
 				}
 			});
 		}});
@@ -77,8 +76,10 @@ public class GwtGiwi implements EntryPoint {
 			});
 		}});
 	}
-	
-	private void doTransaction(final String fromCardNumber, String toCardNumber, Integer amount) {
+
+	private void doTransaction(final String fromCardNumber, 
+			String toCardNumber,	Integer amount) {
+		
 		giwiService.sendTransaction(uuid, fromCardNumber, toCardNumber, amount, 
 			new AsyncCallback<Void>() {
 				@Override
@@ -94,6 +95,73 @@ public class GwtGiwi implements EntryPoint {
 			});
 	}
 	
+	private void doIncrement(final String cardNumber, Integer amount) {
+		
+		giwiService.sendIncrement(uuid, cardNumber, amount, 
+			new AsyncCallback<Void>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					Window.alert(caught.getMessage());
+					showAccounts();
+				}
+				@Override
+				public void onSuccess(Void result) {
+					Window.alert("Карта пополнена");
+					cardOperations(cardNumber);
+				}
+			});
+	}
+
+	private void doBlockCard(final String cardNumber) {
+		
+		RootPanel.get().clear();
+		RootPanel.get().add(new Label(
+				"Производится блокировка, пожалуйста, подождите..."));
+
+		giwiService.sendBlockCard(uuid, cardNumber, 
+				new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+						showAccounts();
+					}
+					@Override
+					public void onSuccess(Void result) {
+						Window.alert("Карта заблокирована");
+						cardOperations(cardNumber);
+					}
+				});
+	}
+
+	private void incAccountPanel(final String cardNumber) {
+		RootPanel.get().clear();
+		RootPanel.get().add(new Label("Добрый день, " + clientName));
+		RootPanel.get().add(new Label("Карта номер  " + cardNumber));
+		final TextBox amountTextBox = new TextBox();
+		RootPanel.get().add(new HorizontalPanel() {{ 
+			add(new Label("Сумма пополнения: ")); 
+			add(amountTextBox); 
+		}} );
+		RootPanel.get().add(new Button("Пополнить") 
+		{{
+			addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					doIncrement(cardNumber, Integer.valueOf(amountTextBox.getText()));
+				}
+			});
+		}});
+		RootPanel.get().add(new Button("Вернуться к операциям с картой") 
+		{{
+			addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					cardOperations(cardNumber);
+				}
+			});
+		}});
+	}
+
 	private void cardOperations(final String cardNumber) {
 		RootPanel.get().clear();
 		
@@ -106,38 +174,64 @@ public class GwtGiwi implements EntryPoint {
 			addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					transactionMenu(cardNumber);
+					transactionPanel(cardNumber);
 				}
 			});
 		}});
 		
-		RootPanel.get().add(new Button("Send StackTrace") 
-		{{ 
+//		RootPanel.get().add(new Button("Show StackTrace") 
+//		{{ 
+//			addClickHandler(new ClickHandler() {
+//				@Override
+//				public void onClick(ClickEvent event) {
+//					
+//					Exception ex = new Exception();
+//					
+//					String message = "";
+//					for (StackTraceElement el : ex.getStackTrace()) {
+//						message = message + 
+//								el.getClassName() + " : " + 
+//								el.getMethodName() + " : " +
+//								el.getLineNumber() + "\n";
+//					}
+//					
+//					Window.alert(message);
+//					cardOperations(cardNumber);
+//				}
+//			});
+//		}});
+		
+		RootPanel.get().add(new Button("Пополнить счёт")
+		{{
 			addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					
-					Exception ex = new Exception();
-					
-					String message = "";
-					for (StackTraceElement el : ex.getStackTrace()) {
-						message = message + 
-								el.getClassName() + " : " + 
-								el.getMethodName() + " : " +
-								el.getLineNumber() + "\n";
-					}
-					
-					Window.alert(message);
-					cardOperations(cardNumber);
+					incAccountPanel(cardNumber);
 				}
 			});
 		}});
 		
-		RootPanel.get().add(new Button("Пополнить счёт"));
-		
 		RootPanel.get().add(new Button("Просмотр операций"));
 		
-		RootPanel.get().add(new Button("Заблокировать карту"));
+		RootPanel.get().add(new Button("Заблокировать карту")
+		{{
+			addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					doBlockCard(cardNumber);
+				}
+			});
+		}});
+		
+		RootPanel.get().add(new Button("Выбрать другую карту")
+		{{
+			addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					showAccounts();
+				}
+			});
+		}});
 		
 		RootPanel.get().add(new Button("Выйти") 
 		{{
@@ -145,7 +239,7 @@ public class GwtGiwi implements EntryPoint {
 				@Override
 				public void onClick(ClickEvent event) {
 					RootPanel.get().clear();
-					RootPanel.get().add(new Label("Вы вышли из систеты"));
+					RootPanel.get().add(new Label("Вы вышли из системы"));
 				}
 			});
 		}});

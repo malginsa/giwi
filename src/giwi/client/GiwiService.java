@@ -20,5 +20,10 @@ public interface GiwiService extends RemoteService {
 	List<Account> getAccounts(Integer idClient) throws IllegalArgumentException;
 	
 	void sendTransaction(Integer idClient, String fromCard, 
-			String toCard, Integer amount) throws IllegalArgumentException; 
+			String toCard, Integer amount) throws IllegalArgumentException;
+
+	void sendIncrement(Integer uuid, String cardNumber, Integer amount);
+
+	void sendBlockCard(Integer uuid, String cardNumber) 
+			throws IllegalArgumentException; 
 }

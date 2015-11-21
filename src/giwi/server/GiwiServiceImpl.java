@@ -40,20 +40,49 @@ public class GiwiServiceImpl
 			List<Account> result = DBManager.getAccounts(idClient);
 			logger.info("client with " + idClient + " requested accounts: " + 
 					result);
-			Utils.pause(3_000); // imitation of timeout to extract data from DB
+			Utils.pause(1_000); // imitation of timeout to extract data from DB
 			return result;
 		}
 
 		@Override
 		public void sendTransaction(Integer idClient, String fromCard, 
-				String toCard, Integer amount) throws IllegalArgumentException {
+				String toCard, Integer amount) throws IllegalArgumentException 
+		{
 			// TODO принадлежность счёта клиенту, ... uuid <-> idClient
 			// TODO FieldVirifier: fromCard, idClient, toCard, amount
 			Integer balance = DBManager.getBalance(fromCard);
 			if (balance < amount) {
 				throw new IllegalArgumentException("Недостаточно денег на счёте");
 			}
-			DBManager.decreaseBalance(fromCard, amount);
-			// DBManager.storeTransaction(idClient, fromAccount, toAccount);
+			DBManager.changeBalance(fromCard, -amount);
+			logger.info(amount + " списано с катры " + fromCard);
+			DBManager.storeTransaction(new Transaction(
+					idClient, fromCard, toCard, amount));
+			logger.info(idClient + " совершил транзакцию с карты " +	fromCard + 
+					" на карту " + toCard + " на сумму: " + amount);
+		}
+
+		@Override
+		public void sendIncrement(Integer uuid, String cardNumber, Integer amount) 
+		{
+			// TODO amount > 0, cardNumber существует и uuid==client_id
+			DBManager.changeBalance(cardNumber, amount);
+			Integer idClient = uuid;
+			logger.info(idClient + " пополнил карту " + cardNumber + 
+					" на сумму " + amount);
+			DBManager.storeTransaction(new Transaction(
+					idClient, "", cardNumber, amount));
+			logger.info(idClient + " совершил транзакцию: пополнил карту " +	cardNumber + 
+					" на сумму: " + amount);
+		}
+
+		@Override
+		public void sendBlockCard(Integer uuid, String cardNumber) 
+				throws IllegalArgumentException 
+		{
+			// TODO проверка uuid == client_id
+			DBManager.doBlockCard(cardNumber);
+			Integer idClient = uuid;
+			logger.info(idClient + " заблокировал карту " + cardNumber);
 		}
 }
