@@ -60,6 +60,7 @@ public class GiwiServiceImpl
 					idClient, fromCard, toCard, amount));
 			logger.info(idClient + " совершил транзакцию с карты " +	fromCard + 
 					" на карту " + toCard + " на сумму: " + amount);
+			Utils.pause(3_000); // imitation of timeout to extract data from DB
 		}
 
 		@Override
@@ -74,6 +75,7 @@ public class GiwiServiceImpl
 					idClient, "", cardNumber, amount));
 			logger.info(idClient + " совершил транзакцию: пополнил карту " +	cardNumber + 
 					" на сумму: " + amount);
+			Utils.pause(3_000); // imitation of timeout to extract data from DB
 		}
 
 		@Override
@@ -84,5 +86,6 @@ public class GiwiServiceImpl
 			DBManager.doBlockCard(cardNumber);
 			Integer idClient = uuid;
 			logger.info(idClient + " заблокировал карту " + cardNumber);
+			Utils.pause(3_000); // imitation of timeout to extract data from DB
 		}
 }

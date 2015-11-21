@@ -1,6 +1,6 @@
 
 TODO
-utf-8 в MySQL
+
 getClient and getAccount are similary..
 private GiwiServiceImpl.Logger
 logger into separate class + логиорвать, логировать, и ещё раз логировать

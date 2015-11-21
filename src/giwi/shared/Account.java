@@ -14,6 +14,10 @@ public class Account implements Serializable{
 	// this constructor dedicated to GWT's strange serialization model
 	private Account() {}
 	
+	public static boolean IsCardBlocked(String selected) {
+		return false;
+	}
+
 	public Account(Integer client_id, String cardNumber, 
 			Integer balance, Boolean isBlocked) 
 	{
@@ -35,11 +39,11 @@ public class Account implements Serializable{
 		this.balance = balance;
 	}
 
-	public Boolean getIsBlocked() {
+	public Boolean isBlocked() {
 		return isBlocked;
 	}
 	
-	public void setIsBlocked(Boolean isBlocked) {
+	public void doBlockCard(Boolean isBlocked) {
 		this.isBlocked = isBlocked;
 	}
 
@@ -50,4 +54,9 @@ public class Account implements Serializable{
 				", balance=" + this.balance + 
 				", isBlocked="	+ this.isBlocked + "]";
 	}
+
+	public boolean isNotBlocked() {
+		return !this.isBlocked();
+	}
+
 }

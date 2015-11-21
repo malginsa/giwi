@@ -1,0 +1,128 @@
+ examples
+ 
+
+	RootPanel.get().add(new VerticalPanel() {{ add(TextCellExample()); add(CellTableExample()); }} );
+
+
+
+
+		RootPanel.get().add(new Button("Show StackTrace") 
+		{{ 
+			addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					
+					Exception ex = new Exception();
+					
+					String message = "";
+					for (StackTraceElement el : ex.getStackTrace()) {
+						message = message + 
+								el.getClassName() + " : " + 
+								el.getMethodName() + " : " +
+								el.getLineNumber() + "\n";
+					}
+					
+					Window.alert(message);
+					cardOperations(cardNumber);
+				}
+			});
+		}});
+
+
+
+		VerticalPanel verticalPanel = new VerticalPanel();
+		Button doOperationsButton = new Button("Совершить операцию");
+		verticalPanel.add(doOperationsButton);
+		Button showTransactionsButton = new Button("Просмотр операций");
+		verticalPanel.add(showTransactionsButton);
+		Button doBlockCardButton = new Button("Заблокировать карту");
+		verticalPanel.add(doBlockCardButton);
+
+		RootPanel.get().add(verticalPanel);
+		
+		verticalPanel.add(new Button("Выйти") 
+		{{
+			addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					RootPanel.get().clear();
+					RootPanel.get().add(new Label("Вы вышли из систеты"));
+				}
+			});
+		}});		
+
+
+
+
+	private static class Contact {
+		private final String address;
+		private final String name;
+
+		public Contact(String name, String address) {
+			this.name = name;
+			this.address = address;
+		}
+		
+		@Override
+		public String toString() {
+			return name + " " + address;
+		}
+	}
+
+	private static CellList<String> TextCellExample() {
+
+		List<String> DAYS = Arrays.asList("Sunday", "Monday", "Tuesday", 
+				"Wednesday", "Thursday", "Friday", "Saturday");
+
+		TextCell textCell = new TextCell();
+		CellList<String> cellList = new CellList<String>(textCell);
+		cellList.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+
+		final SingleSelectionModel<String> selectionModel = 
+				new SingleSelectionModel<String>();
+		cellList.setSelectionModel(selectionModel);
+
+		selectionModel.addSelectionChangeHandler(
+			new SelectionChangeEvent.Handler() {
+				public void onSelectionChange(SelectionChangeEvent event) {
+					String selected = selectionModel.getSelectedObject();
+					if (selected != null) {
+						Window.alert("You selected: " + selected);
+					}
+				}
+			}
+		);
+
+		cellList.setRowCount(DAYS.size(), true);
+		cellList.setRowData(0, DAYS);
+//		cellList.setStyleName("login");
+		return cellList;
+
+	}
+	
+	private static CellTable<Contact> CellTableExample() {
+
+		List<Contact> CONTACTS = Arrays.asList(
+				new Contact("John", "123 Fourth Road"),
+				new Contact("Mary", "456 Lancer Lane"));
+
+		CellTable<Contact> table = new CellTable<Contact>();
+
+		table.addColumn(new TextColumn<Contact>() {
+			@Override
+			public String getValue(Contact contact) {
+				return contact.name;
+			}
+		}, "Name");
+
+		table.addColumn(new TextColumn<Contact>() {
+			@Override
+			public String getValue(Contact contact) {
+				return contact.address;
+			}
+		}, "Address");
+
+		table.setRowCount(CONTACTS.size(), true);
+		table.setRowData(0, CONTACTS);
+		return table;
+	}

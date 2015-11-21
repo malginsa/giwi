@@ -13,10 +13,12 @@ public class ClientAccounts {
 		accounts = _account;
 	}
 	
-	public static List<String> getCardNumbers() {
+	public static List<String> getActiveCardNumbers() {
 		List<String> cards = new LinkedList<String>();
 		for (Account account : accounts) {
-			cards.add(account.getCardNumber());
+			if (account.isNotBlocked()) {
+				cards.add(account.getCardNumber());
+			}
 		}
 		return cards;
 	}

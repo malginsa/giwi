@@ -46,22 +46,26 @@ insert into account values (1, "1111111111111112", 12, FALSE);
 insert into account values (2, "2222222222222222", 22, FALSE);
 insert into account values (3, "3333333333333333", 33, FALSE);
 
-# alter table account change amount balance integer;
-# alter table transaction drop column description;
-# alter table transaction add column amount integer;
-# rename table person to client;
 
-# update account set balance = balance - amount where cardNumber = fromCard;
-# insert into transaction values (1, "1", "2", NOW());
+alter table account change amount balance integer;
+alter table transaction drop column description;
+alter table transaction add column amount integer;
+rename table person to client;
 
-# select * from transaction order by timestamp desc limit 1;
-# select balance from account where cardNumber = "2222222222222222";
+update account set balance = balance - amount where cardNumber = fromCard;
+insert into transaction values (1, "1", "2", NOW());
+
+select * from transaction order by timestamp desc limit 1;
+select balance from account where cardNumber = "2222222222222222";
+update account set isBlocked = FALSE where cardNumber = "1111111111111111";
 
 
 
 # посмотреть collation по-умолчанию для кодировки utf8
 SHOW COLLATION LIKE "utf8%";
 
+
+-----   utf8  -----
 
 /etc/mysql/my.cnf :
 
