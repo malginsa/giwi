@@ -1,5 +1,7 @@
 package giwi.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
@@ -8,9 +10,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.CellList;
-import com.google.gwt.user.cellview.client.CellTable;
-import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -31,8 +30,16 @@ public class GwtGiwi implements EntryPoint {
 	private Integer uuid;
 	private String clientName;
 
+// from examples	
+
+
 	public void onModuleLoad() {
-		// ask credentials
+//		signIn();
+		
+		
+	}
+
+	public void signIn() {
 		
 		RootPanel.get().clear();
 
@@ -66,14 +73,17 @@ public class GwtGiwi implements EntryPoint {
 						public void onSuccess(Integer result) {
 							clientName = nameTextBox.getText();
 							uuid = result;
-							nameTextBox.setText("");
-							passwordTextBox.setText("");
-							acquireAccountsPanel();
+							if (0 == result) {
+								Window.alert("Вы вошли в систему как администратор");
+								adminPanel();
+							} else {
+								acquireAccountsPanel();
+							}
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							okButton.setEnabled(false);
+//							okButton.setEnabled(false);
 							nameTextBox.setText("");
 							passwordTextBox.setText("");
 							Window.alert(caught.getMessage());
@@ -85,6 +95,25 @@ public class GwtGiwi implements EntryPoint {
 		});
 	}
 
+	private void adminPanel() { 
+		
+		showProcessingPanel("Получение данных с сервера");
+		
+		giwiService.getBlockedCards(new AsyncCallback<List<Account>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				RootPanel.get().clear();
+				RootPanel.get().add(new Label(caught.getMessage()));
+				RootPanel.get().add(new Label("Разблокировать нечего"));
+			}
+			@Override
+			public void onSuccess(List<Account> result) {
+				Accounts.setAccounts(result);
+				BlockedCardsSelectionPanel();
+			}
+		});
+	}
+
 	private void acquireAccountsPanel() {
 		
 		showProcessingPanel("Получение данных с сервера");
@@ -92,21 +121,21 @@ public class GwtGiwi implements EntryPoint {
 		giwiService.getAccounts(uuid, new AsyncCallback<List<Account>>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				RootPanel.get().clear();
-				RootPanel.get().add(new Label(caught.getMessage()));
-				RootPanel.get().add(new Label("Посетите наш офис для оформления карты"));
+				byePanel(caught.getMessage());
 			}
 			@Override
 			public void onSuccess(List<Account> result) {
-				ClientAccounts.setAccounts(result);
-				CardSelectionPanel();
+				Accounts.setAccounts(result);
+				CardsSelectionPanel();
 			}
 		});
 	}
 
-	private void CardSelectionPanel() {
+	private void CardsSelectionPanel() {
 		
 		RootPanel.get().clear();
+		RootPanel.get().add(new Label("Добрый день, " + clientName));
+		RootPanel.get().add(new Label("Выберите карту:"));
 		
 		CellList<String> cellList = new CellList<>(new TextCell());
 		final SingleSelectionModel<String> selectionModel = new SingleSelectionModel<String>();
@@ -121,14 +150,55 @@ public class GwtGiwi implements EntryPoint {
 			}
 		});
 		
-		cellList.setRowCount(ClientAccounts.size(), true);
-		cellList.setRowData(ClientAccounts.getActiveCardNumbers());
+		cellList.setRowCount(Accounts.size(), true);
+		cellList.setRowData(Accounts.getActiveCards());
 		
-		RootPanel.get().add(new Label("Добрый день, " + clientName));
-		RootPanel.get().add(new Label("Выберите карту:"));
 		RootPanel.get().add(cellList);
 	}
 	
+	private void BlockedCardsSelectionPanel() {
+
+		RootPanel.get().clear();
+		RootPanel.get().add(new Label("Выберите карту для блокировки:"));
+
+		CellList<String> cellList = new CellList<>(new TextCell());
+		final SingleSelectionModel<String> selectionModel = new SingleSelectionModel<String>();
+		cellList.setSelectionModel(selectionModel);
+		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+			@Override
+			public void onSelectionChange(SelectionChangeEvent event) {
+				String selected = selectionModel.getSelectedObject();
+				if (null != selected) {
+					doUnblockCard(selected);
+				}
+			}
+		});
+
+		cellList.setRowCount(Accounts.size(), true);
+		cellList.setRowData(Accounts.getBlockedCardNumbers());
+		
+		RootPanel.get().add(cellList);
+
+	}
+	
+	private void doUnblockCard(String CardNumber) {
+
+		showProcessingPanel("Выполняется активация");
+
+		giwiService.sendUnblocking(uuid, CardNumber, new AsyncCallback<Void>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					Window.alert(caught.getMessage());
+					adminPanel();
+				}
+				@Override
+				public void onSuccess(Void result) {
+					Window.alert("Карта разблокирована");
+					adminPanel();
+				}
+			});
+	}
+
 	private void cardOperationsPanel(final String cardNumber) {
 		
 		RootPanel.get().clear();
@@ -322,6 +392,11 @@ public class GwtGiwi implements EntryPoint {
 	private void showProcessingPanel(String message) {
 		RootPanel.get().clear();
 		RootPanel.get().add(new Label(message + ", пожалуйста, подождите..."));
+	}
+
+	private void byePanel(String message) {
+		RootPanel.get().clear();
+		RootPanel.get().add(new Label(message));
 	}
 
 }

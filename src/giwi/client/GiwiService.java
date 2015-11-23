@@ -13,17 +13,24 @@ import giwi.shared.Account;
 @RemoteServiceRelativePath("giwi")
 public interface GiwiService extends RemoteService {
 
-//	String pickCard(String name) throws IllegalArgumentException;
+	Integer signIn(String name, String password) 
+			throws IllegalArgumentException;
 
-	Integer signIn(String name, String password) throws IllegalArgumentException;
-
-	List<Account> getAccounts(Integer idClient) throws IllegalArgumentException;
+	List<Account> getAccounts(Integer idClient) 
+			throws IllegalArgumentException;
 	
 	void sendTransaction(Integer idClient, String fromCard, 
-			String toCard, Integer amount) throws IllegalArgumentException;
+		String toCard, Integer amount) 
+			throws IllegalArgumentException;
 
 	void sendIncrement(Integer uuid, String cardNumber, Integer amount);
 
 	void sendBlockCard(Integer uuid, String cardNumber) 
-			throws IllegalArgumentException; 
+			throws IllegalArgumentException;
+
+	List<Account> getBlockedCards()
+			throws IllegalArgumentException;
+
+	void sendUnblocking(Integer uuid, String cardNumber)
+			throws IllegalArgumentException;
 }

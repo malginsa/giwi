@@ -15,7 +15,7 @@
     <servlet-name>giwiServlet</servlet-name>
     <url-pattern>/gwtgiwi/giwi</url-pattern>
   </servlet-mapping>
-  
+
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>GwtGiwi.html</welcome-file>

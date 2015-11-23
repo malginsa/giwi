@@ -22,4 +22,10 @@ public interface AccountMapper {
 	@Update("update account set isBlocked = TRUE where cardNumber = #{cardNumber}")
 	Integer blockCard(String cardNumber);
 
+	@Select("select * from account where isBlocked = TRUE")
+	List<Account> getBlockedAccounts();
+
+	@Update("update account set isBlocked = FALSE where cardNumber = #{cardNumber}")
+	Integer unblockCard(String cardNumber);
+
 }

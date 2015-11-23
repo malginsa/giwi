@@ -35,15 +35,20 @@ public class Account implements Serializable{
 		return balance;
 	}
 	
-	public void setbalance(Integer balance) {
-		this.balance = balance;
-	}
+//	public void setbalance(Integer balance) {
+//		this.balance = balance;
+//	}
 
 	public Boolean isBlocked() {
 		return isBlocked;
 	}
 	
+	public boolean isNotBlocked() {
+		return !this.isBlocked();
+	}
+	
 	public void doBlockCard(Boolean isBlocked) {
+		// ?
 		this.isBlocked = isBlocked;
 	}
 
@@ -53,10 +58,6 @@ public class Account implements Serializable{
 				", cardNumber=" + this.cardNumber + 
 				", balance=" + this.balance + 
 				", isBlocked="	+ this.isBlocked + "]";
-	}
-
-	public boolean isNotBlocked() {
-		return !this.isBlocked();
 	}
 
 }

@@ -46,6 +46,7 @@ insert into account values (1, "1111111111111112", 12, FALSE);
 insert into account values (2, "2222222222222222", 22, FALSE);
 insert into account values (3, "3333333333333333", 33, FALSE);
 
+insert into admin values ("sysop", "123");
 
 alter table account change amount balance integer;
 alter table transaction drop column description;

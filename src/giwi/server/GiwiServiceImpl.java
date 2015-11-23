@@ -28,6 +28,10 @@ public class GiwiServiceImpl
 		public Integer signIn(String name, String password) 
 				throws IllegalArgumentException 
 		{
+			if (DBManager.isAdmin(name, password)) {
+				logger.info("admin " + name + " logged in");
+				return 0;
+			}
 			Integer result = DBManager.getClientId(name, password);
 			logger.info(name + " logged in");
 			return result;
@@ -44,6 +48,14 @@ public class GiwiServiceImpl
 			return result;
 		}
 
+		@Override
+		public List<Account> getBlockedCards() {
+			List<Account> result = DBManager.getBlockedAccounts();
+			logger.info("admin requested blocked accounts: " +	result);
+			Utils.pause(1_000); // imitation of timeout to extract data from DB
+			return result;
+		}
+		
 		@Override
 		public void sendTransaction(Integer idClient, String fromCard, 
 				String toCard, Integer amount) throws IllegalArgumentException 
@@ -68,7 +80,7 @@ public class GiwiServiceImpl
 		{
 			// TODO amount > 0, cardNumber существует и uuid==client_id
 			DBManager.changeBalance(cardNumber, amount);
-			Integer idClient = uuid;
+			Integer idClient = uuid; // uuid -> idClient
 			logger.info(idClient + " пополнил карту " + cardNumber + 
 					" на сумму " + amount);
 			DBManager.storeTransaction(new Transaction(
@@ -84,8 +96,20 @@ public class GiwiServiceImpl
 		{
 			// TODO проверка uuid == client_id
 			DBManager.doBlockCard(cardNumber);
-			Integer idClient = uuid;
+			Integer idClient = uuid; // uuid -> idClient
 			logger.info(idClient + " заблокировал карту " + cardNumber);
 			Utils.pause(3_000); // imitation of timeout to extract data from DB
 		}
+
+		@Override
+		public void sendUnblocking(Integer uuid, String cardNumber)
+				throws IllegalArgumentException 
+		{
+			// TODO uuid - admin
+			DBManager.doUnblockCard(cardNumber);
+			Integer idClient = uuid; // uuid -> idClient
+			logger.info(idClient + " разблокировал карту " + cardNumber);
+			Utils.pause(3_000); // imitation of timeout to extract data from DB
+		}
+
 }

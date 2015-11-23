@@ -6,7 +6,7 @@ private GiwiServiceImpl.Logger
 logger into separate class + логиорвать, логировать, и ещё раз логировать
 Одномоментно одна сессия на каждого пользователя -- реализовать проверку
 Вынести Account из share в server, передавать клиенту только то, что он запросил.
-idClient заменить на uuid -- защита от поддельных транзакций от имени другого пользователя
+idClient заменить на uuid -- защита от поддельных транзакций от имени другого пользователя и для админа так же
 client input validation, amount in TextBox - only digits
 проверка возможности транзакции (amount > 0, на счету достаточно средств) FieldVerifier...
 Реализовать сущность счета
@@ -18,3 +18,8 @@ client input validation, amount in TextBox - only digits
 пополнение счёта,.. когда сервер недоступен
 повторная блокировка карты
 невозможность совершить операции, когда карта заблокирована
+админов может быть несколько
+проверить наличие throws IllegalArgumentException в GiwiService, *Impl, DBManager;
+List<Account> -> Accounts
+use ByePanel
+Panel -> UI

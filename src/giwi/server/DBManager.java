@@ -23,11 +23,25 @@ public class DBManager {
 			sqlSessionFactory.getConfiguration().addMapper(ClientMapper.class);
 			sqlSessionFactory.getConfiguration().addMapper(AccountMapper.class);
 			sqlSessionFactory.getConfiguration().addMapper(TransactionMapper.class);
+			sqlSessionFactory.getConfiguration().addMapper(AdminMapper.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+
+	public static boolean isAdmin(String name, String password) 
+	{
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			AdminMapper mapper = session.getMapper(AdminMapper.class);
+			Admin admin = mapper.getAdmin(name, password);
+			return null != admin;
+		} finally {
+			session.close();
+		}
+	}
+	
 	public static Integer getClientId(String name, String password) 
 		throws IllegalArgumentException
 	{
@@ -52,7 +66,21 @@ public class DBManager {
 			AccountMapper mapper = session.getMapper(AccountMapper.class);
 			List<Account> accounts = mapper.getAccounts(client_id);
 			if (accounts.isEmpty()) {
-				throw new IllegalArgumentException("У Вас нет карт");
+				throw new IllegalArgumentException("У Вас нет активных карт");
+			}
+			return accounts;
+		} finally {
+			session.close();
+		}
+	}
+
+	public static List<Account> getBlockedAccounts() {
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			AccountMapper mapper = session.getMapper(AccountMapper.class);
+			List<Account> accounts = mapper.getBlockedAccounts();
+			if (accounts.isEmpty()) {
+				throw new IllegalArgumentException("Заблокированных карт нет");
 			}
 			return accounts;
 		} finally {
@@ -110,6 +138,21 @@ public class DBManager {
 		try {
 			AccountMapper mapper = session.getMapper(AccountMapper.class);
 			Integer result = mapper.blockCard(cardNumber); 
+			session.commit();
+			if (1 != result) {
+				throw new IllegalArgumentException(
+					"Операция отклонена: сбой в системе...");
+			}
+		} finally {
+			session.close();
+		}
+	}
+
+	public static void doUnblockCard(String cardNumber) {
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			AccountMapper mapper = session.getMapper(AccountMapper.class);
+			Integer result = mapper.unblockCard(cardNumber); 
 			session.commit();
 			if (1 != result) {
 				throw new IllegalArgumentException(

@@ -5,7 +5,7 @@ import java.util.List;
 
 import giwi.shared.Account;
 
-public class ClientAccounts {
+public class Accounts {
 	
 	private static List<Account> accounts;
 	
@@ -13,7 +13,7 @@ public class ClientAccounts {
 		accounts = _account;
 	}
 	
-	public static List<String> getActiveCardNumbers() {
+	public static List<String> getActiveCards() {
 		List<String> cards = new LinkedList<String>();
 		for (Account account : accounts) {
 			if (account.isNotBlocked()) {
@@ -25,6 +25,16 @@ public class ClientAccounts {
 	
 	public static Integer size() {
 		return accounts.size();
+	}
+
+	public static List<String> getBlockedCardNumbers() {
+		List<String> cards = new LinkedList<String>();
+		for (Account account : accounts) {
+			if (account.isBlocked()) {
+				cards.add(account.getCardNumber());
+			}
+		}
+		return cards;
 	}
 	
 }

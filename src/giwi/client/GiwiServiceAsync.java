@@ -11,9 +11,6 @@ import giwi.shared.Account;
  */
 public interface GiwiServiceAsync {
 	
-//	void pickCard(String input, AsyncCallback<String> callback) 
-//		throws IllegalArgumentException;
-
 	void signIn(String name, String password, AsyncCallback<Integer> callback);
 
 	void getAccounts(Integer idClient, AsyncCallback<List<Account>> callback);
@@ -26,5 +23,9 @@ public interface GiwiServiceAsync {
 
 	void sendBlockCard(Integer uuid, String cardNumber, 
 			AsyncCallback<Void> asyncCallback);
+
+	void getBlockedCards(AsyncCallback<List<Account>> asyncCallback);
+
+	void sendUnblocking(Integer uuid, String cardNumber, AsyncCallback<Void> asyncCallback);
 
 }
