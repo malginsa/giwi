@@ -23,3 +23,8 @@ client input validation, amount in TextBox - only digits
 List<Account> -> Accounts
 use ByePanel
 Panel -> UI
+Accounts -> Singleton
+русская локализация
+status -> locale key constants
+CardInfoForm.card упразнить, обновлять только через RPC
+активна - зелёный, заблокирована - красный

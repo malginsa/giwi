@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM 'http://dl.google.com/gwt/DTD/xhtml.ent'>
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:d='urn:import:com.google.gwt.user.datepicker.client'
+	ui:generateFormat='com.google.gwt.i18n.rebind.format.PropertiesFormat'
+	ui:generateLocales='default'>
+
+	<ui:style>
+	.header {
+		font-size: 110%;
+		font-weight: bold;
+		color: #228
+	}
+	.label {
+		font-weight: bold;
+	}
+	.active {
+		color: #181;
+	}
+	.blocked {
+		color: #f55;
+	}
+	</ui:style>
+
+	<g:DecoratorPanel>
+		<g:HTMLPanel>
+			<table>
+				<tr>
+					<td colspan='2' align='center' class='{style.header}'>
+						<ui:msg key='cardInfoFormTitle'>Card Info</ui:msg>
+					</td>
+				</tr>
+
+				<tr>
+					<td class='{style.label}'>
+						<ui:msg key='cardInfoFormNumber'>Number:</ui:msg>
+					</td>
+					<td>
+						<g:Label ui:field='numberLabel' />
+					</td>
+				</tr>
+
+				<tr>
+					<td class='{style.label}'>
+						<ui:msg key='cardInfoFormStatus'>Status:</ui:msg>
+					</td>
+					<td>
+						<g:Label ui:field='statusLabel' />
+					</td>
+				</tr>
+
+				<tr>
+					<td class='{style.label}'>
+						<ui:msg key='cardInfoFormBalance'>Balance:</ui:msg>
+					</td>
+					<td>
+						<g:Label ui:field='balanceLabel' />
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan='2' align='center'>
+						<g:Button ui:field='depositButton'>
+							<ui:msg key='cardInfoFormDepositButton'>Deposit+</ui:msg>
+						</g:Button>
+						&nbsp;
+						<g:Button ui:field='withdrawalButton'>
+							<ui:msg key='cardInfoFormWithdrawalButton'>Withdrawal-</ui:msg>
+						</g:Button>
+					</td>
+				</tr>
+
+				<tr></tr>
+
+				<tr>
+					<td colspan='2' align='center'>
+						<g:Button ui:field="doBlockButton">
+							<ui:msg key='cardInfoFormDoBlockButton'>Block</ui:msg>
+						</g:Button>
+					</td>
+				</tr>
+
+				<tr></tr>
+
+				<tr>
+					<td colspan='2' align='center'>
+						<g:Button ui:field="showTransactionsButton">
+							<ui:msg key='cardInfoFormShowTransactionsButton'>Show transactions</ui:msg>
+						</g:Button>
+					</td>
+				</tr>
+
+			</table>
+		</g:HTMLPanel>
+	</g:DecoratorPanel>
+</ui:UiBinder>

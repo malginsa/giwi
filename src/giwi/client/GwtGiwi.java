@@ -1,7 +1,5 @@
 package giwi.client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwt.cell.client.TextCell;
@@ -15,6 +13,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -30,11 +29,10 @@ public class GwtGiwi implements EntryPoint {
 	private Integer uuid;
 	private String clientName;
 
-// from examples	
 
-
+	
 	public void onModuleLoad() {
-//		signIn();
+		signIn();
 		
 		
 	}
@@ -51,7 +49,7 @@ public class GwtGiwi implements EntryPoint {
 			add(nameTextBox); 
 		}} );
 
-		final TextBox passwordTextBox = new TextBox();
+		final TextBox passwordTextBox = new PasswordTextBox();
 		verticalPanel.add(new HorizontalPanel() {{ 
 			add(new Label("Пароль ")); 
 			add(passwordTextBox); 
@@ -126,7 +124,9 @@ public class GwtGiwi implements EntryPoint {
 			@Override
 			public void onSuccess(List<Account> result) {
 				Accounts.setAccounts(result);
-				CardsSelectionPanel();
+//				CardsSelectionPanel();
+				RootPanel.get().clear();
+				RootPanel.get().add(new CardListLayout());
 			}
 		});
 	}
