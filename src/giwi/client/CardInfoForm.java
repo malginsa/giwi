@@ -18,8 +18,8 @@ public class CardInfoForm extends Composite {
 
 	static interface LocaleConstants extends Constants {
 		String[] cardStatuses();
-		String askAmountDepositMsg();
-		String askAmountWithdrawalMsg();
+		String amountDepositAsk();
+		String amountWithdrawalAsk();
 		String BalanceNegativeAlert();
 	}
 
@@ -48,9 +48,11 @@ public class CardInfoForm extends Composite {
 
 	private final String[] statuses;
 
+	private LocaleConstants constants;
+
 	public CardInfoForm() {
 
-		final LocaleConstants constants = GWT.create(LocaleConstants.class);
+		constants = GWT.create(LocaleConstants.class);
 		statuses = constants.cardStatuses();
 
 		initWidget(uiBinder.createAndBindUi(this));
@@ -66,30 +68,14 @@ public class CardInfoForm extends Composite {
 		depositButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String prompt = Window.prompt(constants.askAmountDepositMsg(), "");
-				if (null != prompt) {
-					int newBalance = selectedCard.getBalance() + 
-							Integer.parseInt(prompt);
-					selectedCard.setBalance(newBalance);
-					doRefreshLayout();
-				}
+				changeBalanceDialog(constants.amountDepositAsk(), 1);
 			}
 		});
 		
 		withdrawalButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String prompt = Window.prompt(constants.askAmountWithdrawalMsg(), "");
-				if (null != prompt) {
-					int newBalance = selectedCard.getBalance() - 
-							Integer.parseInt(prompt);
-					if (newBalance < 0) {
-						Window.alert(constants.BalanceNegativeAlert());
-					} else {
-						selectedCard.setBalance(newBalance);
-						doRefreshLayout();
-					}
-				}
+				changeBalanceDialog(constants.amountWithdrawalAsk(), -1);
 			}
 		});
 		
@@ -110,15 +96,24 @@ public class CardInfoForm extends Composite {
 
 	}
 
-	public void selectCard(Card card) {
-		this.selectedCard = card;
-		doRefreshInfoForm();
+	private void changeBalanceDialog(String ask, int factor) {
+		String prompt = Window.prompt(ask, "");
+		if (null != prompt) {
+			int newBalance = selectedCard.getBalance() + factor *	Integer.parseInt(prompt);
+			if (newBalance < 0) {
+				Window.alert(constants.BalanceNegativeAlert());
+			} else {
+				selectedCard.setBalance(newBalance);
+				doRefreshLayout();
+			}
+		}
 	}
-
+	
 	private void doRefreshLayout() {
 		this.doRefreshInfoForm();
 		CardDatabase.get().doRefreshListForm();
 	}
+	
 	private void doRefreshInfoForm() {
 		Boolean isActive = !selectedCard.getIsBlocked();
 		depositButton.setEnabled(isActive);
@@ -130,5 +125,10 @@ public class CardInfoForm extends Composite {
 		balanceLabel.setText(selectedCard.getBalance().toString());
 	}
 	
+	public void selectCard(Card card) {
+		this.selectedCard = card;
+		doRefreshInfoForm();
+	}
+
 
 }

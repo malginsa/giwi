@@ -25,9 +25,12 @@
         <td
           valign='top'
           align='center'>
-          <s:ShowMorePagerPanel
+<!--      <s:ShowMorePagerPanel
             addStyleNames='{style.scrollable}'
-            ui:field='pagerPanel' />
+            ui:field='pagerPanel' /> -->
+          <g:ScrollPanel
+            addStyleNames='{style.scrollable}'
+            ui:field='scroller' />
         </td>
         <td
           class='{style.cardFormCell}'

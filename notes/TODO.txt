@@ -28,3 +28,5 @@ Accounts -> Singleton
 status -> locale key constants
 CardInfoForm.card упразнить, обновлять только через RPC
 активна - зелёный, заблокирована - красный
+? упразнить CardDatabase
+ShowMorePagerPanel упрощённый вариант

@@ -29,12 +29,8 @@ public class GwtGiwi implements EntryPoint {
 	private Integer uuid;
 	private String clientName;
 
-
-	
 	public void onModuleLoad() {
 		signIn();
-		
-		
 	}
 
 	public void signIn() {
@@ -124,9 +120,9 @@ public class GwtGiwi implements EntryPoint {
 			@Override
 			public void onSuccess(List<Account> result) {
 				Accounts.setAccounts(result);
-//				CardsSelectionPanel();
-				RootPanel.get().clear();
-				RootPanel.get().add(new CardListLayout());
+				CardsSelectionPanel();
+//				RootPanel.get().clear();
+//				RootPanel.get().add(new CardListLayout());
 			}
 		});
 	}

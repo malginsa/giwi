@@ -11,6 +11,7 @@ import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -41,7 +42,9 @@ public class CardListLayout extends Composite {
 	@UiField
 	Button signOutButton;
 	@UiField
-	ShowMorePagerPanel pagerPanel;
+//	ShowMorePagerPanel pagerPanel;
+//	ScrollPanel pagerPanel;
+	ScrollPanel scroller;
 
 	private CellList<Card> cellList;
 
@@ -65,7 +68,8 @@ public class CardListLayout extends Composite {
 
 		CardDatabase.get().addDataDisplay(cellList);
 
-		pagerPanel.setDisplay(cellList);
+//		pagerPanel.setDisplay(cellList);
+		scroller.add(cellList);
 
 		signOutButton.addClickHandler(new ClickHandler() {
 			@Override

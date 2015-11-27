@@ -11,7 +11,7 @@ public class Account implements Serializable{
 	private Integer balance;
 	private Boolean isBlocked;
 
-	// this constructor dedicated to GWT's strange serialization model
+	// this constructor dedicated to GWT's serialization model
 	private Account() {}
 	
 	public static boolean IsCardBlocked(String selected) {

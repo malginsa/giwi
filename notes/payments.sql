@@ -1,9 +1,11 @@
 
 mysql -u payments -p111 payments
-SET NAMES utf8 COLLATE utf8_unicode_ci;
+	SET NAMES utf8 
+	COLLATE utf8_unicode_ci;
 
 create database payments
-	CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+	CHARACTER SET utf8 
+	COLLATE utf8_unicode_ci;
 
 use payments;
 

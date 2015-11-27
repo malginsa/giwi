@@ -37,7 +37,7 @@ public class CardDatabase {
 
 	private void queryCards(Integer clientId) {
 		List<Card> list = dataProvider.getList();
-		for (Integer i = 10; i < 100; i++) {
+		for (Integer i = 10; i < 30; i++) {
 			list.add(new Card("11111111111111" + i.toString(), Random.nextBoolean(), i));
 		}
 	}

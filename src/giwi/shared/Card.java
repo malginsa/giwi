@@ -8,33 +8,24 @@ public class Card implements Serializable {
 
 	private static final long serialVersionUID = -6026016480963292925L;
 
-	private static int nextId = 0;
-	
 	public static final ProvidesKey<Card> KEY_PROVIDER = new ProvidesKey<Card>() {
 		@Override
 		public Object getKey(Card card) {
-			return null == card ? null : card.getId();
+			return null == card ? null : card.getNumber();
 		} 
 	};
-	
-	private int id;
+
 	private String number;
 	private Boolean isBlocked;
 	private Integer balance;
 
-	// this constructor dedicated to GWT's strange serialization model
+	// this constructor dedicated to GWT's serialization model
 	private Card() {}
 	
 	public Card(String number, Boolean isBlocked, Integer balance) {
-		this.id = nextId;
-		nextId++;
 		this.number = number;
 		this.isBlocked = isBlocked;
 		this.balance = balance;
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public String getNumber() {
@@ -63,8 +54,7 @@ public class Card implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Card [id=" + this.id +
-				 ", number=" + this.number +
+		return "Card [number=" + this.number +
 				 ", isBlocked=" + this.isBlocked +
 				 ", balance=" + this.balance + "]";
 	}
