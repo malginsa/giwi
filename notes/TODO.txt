@@ -30,3 +30,10 @@ CardInfoForm.card упразнить, обновлять только через
 активна - зелёный, заблокирована - красный
 ? упразнить CardDatabase
 ShowMorePagerPanel упрощённый вариант
+setters & getters in CardInfo
+админу имя клиента заблокированной карты
+_static_ final Logger logger
+onLineClients во внешний класс
+OnLineClientDB -> singleton
+GiwiServiceImpl.signOut, OnLineClientDB.deleteClientId
+deleteClientId когда клиент закрыл окно браузера

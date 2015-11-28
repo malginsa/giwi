@@ -9,7 +9,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import giwi.shared.Account;
+import giwi.client.Account;
+import giwi.shared.CardInfo;
 
 public class DBManager {
 
@@ -22,13 +23,12 @@ public class DBManager {
 			sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceReader);
 			sqlSessionFactory.getConfiguration().addMapper(ClientMapper.class);
 			sqlSessionFactory.getConfiguration().addMapper(AccountMapper.class);
-			sqlSessionFactory.getConfiguration().addMapper(TransactionMapper.class);
+//			sqlSessionFactory.getConfiguration().addMapper(TransactionMapper.class);
 			sqlSessionFactory.getConfiguration().addMapper(AdminMapper.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	public static boolean isAdmin(String name, String password) 
 	{
@@ -58,13 +58,14 @@ public class DBManager {
 		}
 	}
 
-	public static List<Account> getAccounts(int client_id)
+
+	public static List<CardInfo> getCardInfo(Integer clientId) 
 			throws IllegalArgumentException
 	{
 		SqlSession session = sqlSessionFactory.openSession();
 		try {
 			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			List<Account> accounts = mapper.getAccounts(client_id);
+			List<CardInfo> accounts = mapper.getCardInfo(clientId);
 			if (accounts.isEmpty()) {
 				throw new IllegalArgumentException("У Вас нет активных карт");
 			}
@@ -74,93 +75,111 @@ public class DBManager {
 		}
 	}
 
-	public static List<Account> getBlockedAccounts() {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			List<Account> accounts = mapper.getBlockedAccounts();
-			if (accounts.isEmpty()) {
-				throw new IllegalArgumentException("Заблокированных карт нет");
-			}
-			return accounts;
-		} finally {
-			session.close();
-		}
-	}
 
-	public static Integer getBalance(String fromCard) {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			Account account = mapper.getBalance(fromCard);
-			if (null == account) {
-				throw new IllegalArgumentException(
-					"Операция отклонена: неверный номер карты");
-			}
-			return account.getBalance();
-		} finally {
-			session.close();
-		}
-	}
-
-	public static void changeBalance(String fromCard, Integer amount) {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			Integer result = mapper.changeBalance(fromCard, amount); 
-			session.commit();
-			if (1 != result) {
-				throw new IllegalArgumentException(
-					"Операция отклонена: сбой в системе...");
-			}
-		} finally {
-			session.close();
-		}
-	}
-
-	public static void storeTransaction(Transaction transaction) {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			TransactionMapper mapper = session.getMapper(TransactionMapper.class);
-			Integer result = mapper.storeTransaction(transaction);
-			session.commit();
-			if (1 != result) {
-				throw new IllegalArgumentException(
-					"Операция отклонена: транзакция не выполнена...");
-			}
-		} finally {
-			session.close();
-		}
-	}
-
-	public static void doBlockCard(String cardNumber) {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			Integer result = mapper.blockCard(cardNumber); 
-			session.commit();
-			if (1 != result) {
-				throw new IllegalArgumentException(
-					"Операция отклонена: сбой в системе...");
-			}
-		} finally {
-			session.close();
-		}
-	}
-
-	public static void doUnblockCard(String cardNumber) {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			AccountMapper mapper = session.getMapper(AccountMapper.class);
-			Integer result = mapper.unblockCard(cardNumber); 
-			session.commit();
-			if (1 != result) {
-				throw new IllegalArgumentException(
-					"Операция отклонена: сбой в системе...");
-			}
-		} finally {
-			session.close();
-		}
-	}
-
+	
+//	public static List<Account> getAccounts(int client_id)
+//			throws IllegalArgumentException
+//	{
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			AccountMapper mapper = session.getMapper(AccountMapper.class);
+//			List<Account> accounts = mapper.getAccounts(client_id);
+//			if (accounts.isEmpty()) {
+//				throw new IllegalArgumentException("У Вас нет активных карт");
+//			}
+//			return accounts;
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
+//	public static List<Account> getBlockedAccounts() {
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			AccountMapper mapper = session.getMapper(AccountMapper.class);
+//			List<Account> accounts = mapper.getBlockedAccounts();
+//			if (accounts.isEmpty()) {
+//				throw new IllegalArgumentException("Заблокированных карт нет");
+//			}
+//			return accounts;
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
+//	public static Integer getBalance(String fromCard) {
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			AccountMapper mapper = session.getMapper(AccountMapper.class);
+//			Account account = mapper.getBalance(fromCard);
+//			if (null == account) {
+//				throw new IllegalArgumentException(
+//					"Операция отклонена: неверный номер карты");
+//			}
+//			return account.getBalance();
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
+//	public static void changeBalance(String fromCard, Integer amount) {
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			AccountMapper mapper = session.getMapper(AccountMapper.class);
+//			Integer result = mapper.changeBalance(fromCard, amount); 
+//			session.commit();
+//			if (1 != result) {
+//				throw new IllegalArgumentException(
+//					"Операция отклонена: сбой в системе...");
+//			}
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
+//	public static void storeTransaction(Transaction transaction) {
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			TransactionMapper mapper = session.getMapper(TransactionMapper.class);
+//			Integer result = mapper.storeTransaction(transaction);
+//			session.commit();
+//			if (1 != result) {
+//				throw new IllegalArgumentException(
+//					"Операция отклонена: транзакция не выполнена...");
+//			}
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
+//	public static void doBlockCard(String cardNumber) {
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			AccountMapper mapper = session.getMapper(AccountMapper.class);
+//			Integer result = mapper.blockCard(cardNumber); 
+//			session.commit();
+//			if (1 != result) {
+//				throw new IllegalArgumentException(
+//					"Операция отклонена: сбой в системе...");
+//			}
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
+//	public static void doUnblockCard(String cardNumber) {
+//		SqlSession session = sqlSessionFactory.openSession();
+//		try {
+//			AccountMapper mapper = session.getMapper(AccountMapper.class);
+//			Integer result = mapper.unblockCard(cardNumber); 
+//			session.commit();
+//			if (1 != result) {
+//				throw new IllegalArgumentException(
+//					"Операция отклонена: сбой в системе...");
+//			}
+//		} finally {
+//			session.close();
+//		}
+//	}
+//
 }

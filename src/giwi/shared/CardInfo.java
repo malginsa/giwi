@@ -1,16 +1,16 @@
 package giwi.shared;
 
 import java.io.Serializable;
-
 import com.google.gwt.view.client.ProvidesKey;
 
-public class Card implements Serializable {
+public class CardInfo implements Serializable {
 
-	private static final long serialVersionUID = -6026016480963292925L;
+	private static final long serialVersionUID = -3469183068442440482L;
 
-	public static final ProvidesKey<Card> KEY_PROVIDER = new ProvidesKey<Card>() {
+	public static final ProvidesKey<CardInfo> KEY_PROVIDER = 
+			new ProvidesKey<CardInfo>() {
 		@Override
-		public Object getKey(Card card) {
+		public Object getKey(CardInfo card) {
 			return null == card ? null : card.getNumber();
 		} 
 	};
@@ -19,10 +19,10 @@ public class Card implements Serializable {
 	private Boolean isBlocked;
 	private Integer balance;
 
-	// this constructor dedicated to GWT's serialization model
-	private Card() {}
+	// dedicated to GWT's serialization model
+	private CardInfo() {}
 	
-	public Card(String number, Boolean isBlocked, Integer balance) {
+	public CardInfo(String number, Boolean isBlocked, Integer balance) {
 		this.number = number;
 		this.isBlocked = isBlocked;
 		this.balance = balance;
@@ -32,16 +32,20 @@ public class Card implements Serializable {
 		return number;
 	}
 
-	public Integer getStatusId() {
-		return isBlocked ? 1 : 0;
-	}
-	
 	public Boolean getIsBlocked() {
 		return isBlocked;
 	}
 
+	public Integer getStatusId() {
+		return isBlocked ? 1 : 0;
+	}
+	
 	public void setIsBlocked(Boolean isBlocked) {
 		this.isBlocked = isBlocked;
+	}
+
+	public void doBlock() {
+		this.isBlocked = true;
 	}
 
 	public Integer getBalance() {
@@ -54,12 +58,9 @@ public class Card implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Card [number=" + this.number +
+		return "CardInfo [number=" + this.number +
 				 ", isBlocked=" + this.isBlocked +
 				 ", balance=" + this.balance + "]";
 	}
 
-	public void doBlock() {
-		this.isBlocked = true;
-	}
 }

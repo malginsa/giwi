@@ -16,16 +16,16 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
-import giwi.shared.Card;
+import giwi.shared.CardInfo;
 
 public class CardListLayout extends Composite {
 
 	interface Binder extends UiBinder<Widget, CardListLayout> { 
 	};
 	
-	static class CardCell extends AbstractCell<Card> {
+	static class CardCell extends AbstractCell<CardInfo> {
 		@Override
-		public void render(Context context, Card card, SafeHtmlBuilder sb) {
+		public void render(Context context, CardInfo card, SafeHtmlBuilder sb) {
 			if (null == card) {
 				return;
 			}
@@ -46,14 +46,14 @@ public class CardListLayout extends Composite {
 //	ScrollPanel pagerPanel;
 	ScrollPanel scroller;
 
-	private CellList<Card> cellList;
+	private CellList<CardInfo> cellList;
 
 	public CardListLayout() {
 
-		cellList = new CellList<Card>(new CardCell(), Card.KEY_PROVIDER);
+		cellList = new CellList<CardInfo>(new CardCell(), CardInfo.KEY_PROVIDER);
 
-		final SingleSelectionModel<Card> selectionModel = new SingleSelectionModel<Card>(
-				Card.KEY_PROVIDER);
+		final SingleSelectionModel<CardInfo> selectionModel = 
+				new SingleSelectionModel<CardInfo>(CardInfo.KEY_PROVIDER);
 		cellList.setSelectionModel(selectionModel);
 		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 			@Override
@@ -66,7 +66,7 @@ public class CardListLayout extends Composite {
 		Widget widget = binder.createAndBindUi(this);
 		initWidget(widget);
 
-		CardDatabase.get().addDataDisplay(cellList);
+		CardDB.get().addDataDisplay(cellList);
 
 //		pagerPanel.setDisplay(cellList);
 		scroller.add(cellList);

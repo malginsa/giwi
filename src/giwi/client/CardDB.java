@@ -6,24 +6,33 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 
-import giwi.shared.Card;
+import giwi.shared.CardInfo;
 
-public class CardDatabase {
+public class CardDB {
 
-	private static CardDatabase instance;
+	private static CardDB instance;
 	
-	private CardDatabase() {
+	ListDataProvider<CardInfo> dataProvider = new ListDataProvider<CardInfo>();
+	
+	private CardDB() {
 		queryCards(1);
 	}
 
-	public static CardDatabase get () {
+	public static CardDB get() {
 		if (null == instance) {
-			instance = new CardDatabase();
+			instance = new CardDB();
 		}
 		return instance;
 	}
 	
-	ListDataProvider<Card> dataProvider = new ListDataProvider<Card>();
+//	!!!
+	public void put(List<CardInfo> list) {
+		List<CardInfo> listData = dataProvider.getList();
+		for (CardInfo cardInfo : listData) {
+			listData.add(cardInfo);
+		}
+	}
+	
 	
 	/**
 	 * Add a display to the database. The current range of interest of the display
@@ -31,14 +40,14 @@ public class CardDatabase {
 	 * 
 	 * @param display a {@Link HasData}.
 	 */
-	public void addDataDisplay(HasData<Card> display) {
+	public void addDataDisplay(HasData<CardInfo> display) {
 		dataProvider.addDataDisplay(display);
 	}
 
 	private void queryCards(Integer clientId) {
-		List<Card> list = dataProvider.getList();
+		List<CardInfo> list = dataProvider.getList();
 		for (Integer i = 10; i < 30; i++) {
-			list.add(new Card("11111111111111" + i.toString(), Random.nextBoolean(), i));
+			list.add(new CardInfo("11111111111111" + i.toString(), Random.nextBoolean(), i));
 		}
 	}
 

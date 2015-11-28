@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-import giwi.shared.Card;
+import giwi.shared.CardInfo;
 
 public class CardInfoForm extends Composite {
 
@@ -44,7 +44,7 @@ public class CardInfoForm extends Composite {
 	@UiField
 	Button showTransactionsButton;
 
-	private Card selectedCard;
+	private CardInfo selectedCard;
 
 	private final String[] statuses;
 
@@ -68,14 +68,14 @@ public class CardInfoForm extends Composite {
 		depositButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				changeBalanceDialog(constants.amountDepositAsk(), 1);
+				changeBalance(constants.amountDepositAsk(), 1);
 			}
 		});
 		
 		withdrawalButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				changeBalanceDialog(constants.amountWithdrawalAsk(), -1);
+				changeBalance(constants.amountWithdrawalAsk(), -1);
 			}
 		});
 		
@@ -96,9 +96,9 @@ public class CardInfoForm extends Composite {
 
 	}
 
-	private void changeBalanceDialog(String ask, int factor) {
-		String prompt = Window.prompt(ask, "");
-		if (null != prompt) {
+	private void changeBalance(String prompt, int factor) {
+		String res = Window.prompt(prompt, "");
+		if (null != res) {
 			int newBalance = selectedCard.getBalance() + factor *	Integer.parseInt(prompt);
 			if (newBalance < 0) {
 				Window.alert(constants.BalanceNegativeAlert());
@@ -111,7 +111,7 @@ public class CardInfoForm extends Composite {
 	
 	private void doRefreshLayout() {
 		this.doRefreshInfoForm();
-		CardDatabase.get().doRefreshListForm();
+		CardDB.get().doRefreshListForm();
 	}
 	
 	private void doRefreshInfoForm() {
@@ -125,8 +125,8 @@ public class CardInfoForm extends Composite {
 		balanceLabel.setText(selectedCard.getBalance().toString());
 	}
 	
-	public void selectCard(Card card) {
-		this.selectedCard = card;
+	public void selectCard(CardInfo cardInfo) {
+		this.selectedCard = cardInfo;
 		doRefreshInfoForm();
 	}
 
