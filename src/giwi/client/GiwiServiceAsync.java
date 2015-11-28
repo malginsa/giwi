@@ -15,6 +15,8 @@ public interface GiwiServiceAsync {
 
 	void getCardInfo(Long uuid, AsyncCallback<List<CardInfo>> asyncCallback);
 
+	void signOut(Long uuid, AsyncCallback<Void> callback);
+
 //	void getAccounts(Integer idClient, AsyncCallback<List<Account>> callback);
 //
 //	void sendTransaction(Integer idClient, String fromCard, 

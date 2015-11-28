@@ -40,6 +40,17 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 	}
 
 	@Override
+	public void signOut(Long uuid) {
+		if (!onLineClientDB.isUuidExist(uuid)) {
+			logger.warn("SECURITY VIOLATION: Sign Out from non-existent uuid detected");
+			throw new IllegalArgumentException(
+					"Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+		onLineClientDB.deleteClientId(uuid);
+		Utils.pause(1_000); // imitation of timeout to extract data from DB
+	}
+
+	@Override
 	public List<CardInfo> getCardInfo(Long uuid) 
 			throws IllegalArgumentException
 	{

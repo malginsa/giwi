@@ -16,6 +16,9 @@ public interface GiwiService extends RemoteService {
 	Long signIn(String name, String password) 
 			throws IllegalArgumentException;
 
+	void signOut(Long uuid) 
+			throws IllegalArgumentException;
+
 	List<CardInfo> getCardInfo(Long uuid);
 
 //	List<Account> getAccounts(Integer idClient) 

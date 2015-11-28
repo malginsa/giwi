@@ -37,3 +37,6 @@ onLineClients во внешний класс
 OnLineClientDB -> singleton
 GiwiServiceImpl.signOut, OnLineClientDB.deleteClientId
 deleteClientId когда клиент закрыл окно браузера
+TODO signOutSend
+giwiService public -> private ; uuid, clientName -> private
+

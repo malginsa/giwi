@@ -90,7 +90,7 @@ public class CardInfoForm extends Composite {
 		showTransactionsButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("You choosed show transactions");
+// TODO
 			}
 		});
 
@@ -99,7 +99,7 @@ public class CardInfoForm extends Composite {
 	private void changeBalance(String prompt, int factor) {
 		String res = Window.prompt(prompt, "");
 		if (null != res) {
-			int newBalance = selectedCard.getBalance() + factor *	Integer.parseInt(prompt);
+			int newBalance = selectedCard.getBalance() + factor *	Integer.parseInt(res);
 			if (newBalance < 0) {
 				Window.alert(constants.BalanceNegativeAlert());
 			} else {

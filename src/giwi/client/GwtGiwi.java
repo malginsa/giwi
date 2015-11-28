@@ -24,10 +24,10 @@ import giwi.shared.CardInfo;
 
 public class GwtGiwi implements EntryPoint {
 
-	private final GiwiServiceAsync giwiService = GWT.create(GiwiService.class);
+	public static final GiwiServiceAsync giwiService = GWT.create(GiwiService.class);
 
-	private Long uuid;
-	private String clientName;
+	public static Long uuid;
+	public static String clientName;
 
 	public void onModuleLoad() {
 		signIn();
@@ -123,7 +123,6 @@ public class GwtGiwi implements EntryPoint {
 			public void onSuccess(List<CardInfo> result) {
 //				Accounts.setAccounts(result);
 //				CardsSelectionPanel();
-				Window.alert(result.toString());
 				CardDB.get().put(result);
 				RootPanel.get().clear();
 				RootPanel.get().add(new CardListLayout());

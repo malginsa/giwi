@@ -15,7 +15,6 @@ public class CardDB {
 	ListDataProvider<CardInfo> dataProvider = new ListDataProvider<CardInfo>();
 	
 	private CardDB() {
-		queryCards(1);
 	}
 
 	public static CardDB get() {
@@ -24,15 +23,6 @@ public class CardDB {
 		}
 		return instance;
 	}
-	
-//	!!!
-	public void put(List<CardInfo> list) {
-		List<CardInfo> listData = dataProvider.getList();
-		for (CardInfo cardInfo : listData) {
-			listData.add(cardInfo);
-		}
-	}
-	
 	
 	/**
 	 * Add a display to the database. The current range of interest of the display
@@ -44,17 +34,16 @@ public class CardDB {
 		dataProvider.addDataDisplay(display);
 	}
 
-	private void queryCards(Integer clientId) {
-		List<CardInfo> list = dataProvider.getList();
-		for (Integer i = 10; i < 30; i++) {
-			list.add(new CardInfo("11111111111111" + i.toString(), Random.nextBoolean(), i));
-		}
-	}
-
-	/**
-	 * Refresh all displays.
-	 */
 	public void doRefreshListForm() {
+		dataProvider.refresh();
+	}
+	
+	public void put(List<CardInfo> list) {
+		List<CardInfo> listData = dataProvider.getList();
+		for (CardInfo cardInfo : list) {
+			listData.add(cardInfo);
+		}
+// !!!
 		dataProvider.refresh();
 	}
 	

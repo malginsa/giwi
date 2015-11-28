@@ -9,8 +9,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -32,7 +35,10 @@ public class CardListLayout extends Composite {
 	      sb.appendHtmlConstant("<table><tr><td>");
 	      sb.appendEscaped(card.getNumber());
 	      sb.appendHtmlConstant("</td></tr><tr><td>");
+	      sb.appendEscaped(card.getIsBlocked().toString());
+	      sb.appendHtmlConstant("</td><td>");
 	      sb.appendEscaped(card.getBalance().toString());
+	      sb.appendHtmlConstant("</td><td>");
 	      sb.appendHtmlConstant("</td></tr></table>");
 		}
 	}
@@ -42,9 +48,8 @@ public class CardListLayout extends Composite {
 	@UiField
 	Button signOutButton;
 	@UiField
-//	ShowMorePagerPanel pagerPanel;
-//	ScrollPanel pagerPanel;
-	ScrollPanel scroller;
+	ShowMorePagerPanel pagerPanel;
+//	ScrollPanel scroller;
 
 	private CellList<CardInfo> cellList;
 
@@ -68,13 +73,26 @@ public class CardListLayout extends Composite {
 
 		CardDB.get().addDataDisplay(cellList);
 
-//		pagerPanel.setDisplay(cellList);
-		scroller.add(cellList);
+//		scroller.add(cellList);
+		pagerPanel.setDisplay(cellList);
 
 		signOutButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert("Вы действительно желали бы выйти?");
+				RootPanel.get().clear();
+				RootPanel.get().add(new Label("Выполняется выход, пожалуйста, подождите..."));
+				GwtGiwi.giwiService.signOut(GwtGiwi.uuid, new AsyncCallback<Void>() {
+					@Override
+					public void onSuccess(Void result) {
+						RootPanel.get().clear();
+						RootPanel.get().add(new Label("Вы вышли из системы"));
+					}
+					@Override
+					public void onFailure(Throwable caught) {
+						RootPanel.get().clear();
+						RootPanel.get().add(new Label(caught.getMessage()));
+					}
+				});
 			}
 		});
 	}
