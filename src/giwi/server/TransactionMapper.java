@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Insert;
 
 public interface TransactionMapper {
 
-	@Insert("insert into transaction values (#{client_id}, #{fromCard}, #{toCard}, #{amount}, NOW())")
+	@Insert("insert into transaction values (#{account_id}, #{amount}, NOW())")
 	Integer storeTransaction(Transaction transaction);
 
 }

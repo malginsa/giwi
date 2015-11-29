@@ -7,6 +7,7 @@ import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -18,8 +19,11 @@ public class CardInfoForm extends Composite {
 
 	static interface LocaleConstants extends Constants {
 		String[] cardStatuses();
+
 		String amountDepositAsk();
+
 		String amountWithdrawalAsk();
+
 		String BalanceNegativeAlert();
 	}
 
@@ -46,9 +50,9 @@ public class CardInfoForm extends Composite {
 
 	private CardInfo selectedCard;
 
-	private final String[] statuses;
+	public final String[] statuses;
 
-	private LocaleConstants constants;
+	public static LocaleConstants constants;
 
 	public CardInfoForm() {
 
@@ -71,49 +75,74 @@ public class CardInfoForm extends Composite {
 				changeBalance(constants.amountDepositAsk(), 1);
 			}
 		});
-		
+
 		withdrawalButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				changeBalance(constants.amountWithdrawalAsk(), -1);
 			}
 		});
-		
+
 		doBlockButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				selectedCard.doBlock();
-				doRefreshLayout();
+				GwtGiwi.giwiService.sendDoBlockCard(GwtGiwi.uuid, selectedCard.getNumber(), new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+					}
+					@Override
+					public void onSuccess(Void result) {
+						Window.alert("Карта заблокирована");
+						selectedCard.doBlock();
+						doRefreshLayout();
+					}
+				});
 			}
 		});
-		
+
 		showTransactionsButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-// TODO
+				// TODO
 			}
 		});
 
 	}
 
 	private void changeBalance(String prompt, int factor) {
+
 		String res = Window.prompt(prompt, "");
-		if (null != res) {
-			int newBalance = selectedCard.getBalance() + factor *	Integer.parseInt(res);
-			if (newBalance < 0) {
-				Window.alert(constants.BalanceNegativeAlert());
-			} else {
+		// TODO только цифры
+		if (null == res) {
+			return;
+		}
+		int amount = factor * Integer.parseInt(res);
+		final int newBalance = selectedCard.getBalance() + amount;
+		if (newBalance < 0) {
+			Window.alert(constants.BalanceNegativeAlert());
+			return;
+		}
+		GwtGiwi.giwiService.sendTransaction(GwtGiwi.uuid, selectedCard.getNumber(), amount, new AsyncCallback<Void>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(Void result) {
 				selectedCard.setBalance(newBalance);
 				doRefreshLayout();
+				Window.alert("Баланс успешно изменён");
 			}
-		}
+		});
 	}
-	
+
 	private void doRefreshLayout() {
 		this.doRefreshInfoForm();
 		CardDB.get().doRefreshListForm();
 	}
-	
+
 	private void doRefreshInfoForm() {
 		Boolean isActive = !selectedCard.getIsBlocked();
 		depositButton.setEnabled(isActive);
@@ -124,11 +153,10 @@ public class CardInfoForm extends Composite {
 		statusLabel.setText(statuses[selectedCard.getStatusId()]);
 		balanceLabel.setText(selectedCard.getBalance().toString());
 	}
-	
+
 	public void selectCard(CardInfo cardInfo) {
 		this.selectedCard = cardInfo;
 		doRefreshInfoForm();
 	}
-
 
 }

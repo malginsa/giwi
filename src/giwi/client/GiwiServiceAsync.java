@@ -10,12 +10,21 @@ import giwi.shared.CardInfo;
  * The async counterpart of <code>GiwiService</code>.
  */
 public interface GiwiServiceAsync {
-	
+
 	void signIn(String name, String password, AsyncCallback<Long> callback);
 
 	void getCardInfo(Long uuid, AsyncCallback<List<CardInfo>> asyncCallback);
 
 	void signOut(Long uuid, AsyncCallback<Void> callback);
+
+	void sendTransaction(Long uuid, String cardNumber, Integer amount, 
+			AsyncCallback<Void> callback);
+
+	void sendDoBlockCard(Long uuid, String cardNumber, AsyncCallback<Void> callback);
+
+	void getBlockedCards(AsyncCallback<List<String>> callback);
+
+	void sendUnblocking(Long uuid, String cardNumber, AsyncCallback<Void> callback);
 
 //	void getAccounts(Integer idClient, AsyncCallback<List<Account>> callback);
 //

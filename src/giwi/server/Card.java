@@ -1,4 +1,4 @@
-package giwi.client;
+package giwi.server;
 
 public class Card {
 
@@ -18,4 +18,17 @@ public class Card {
 				 ", isBlocked=" + this.isBlocked +
 				 ", balance=" + this.account_id + "]";
 	}
+	
+	public String getNumber() {
+		return this.number;
+	}
+	
+	public Boolean getIsBlocked() {
+		return this.isBlocked;
+	}
+
+	public Integer getAccount_id() {
+		return this.account_id;
+	}
+
 }

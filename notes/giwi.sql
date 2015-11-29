@@ -55,8 +55,14 @@ insert into card values ("1111111111111112", FALSE, 2);
 insert into card values ("2222222222222222", FALSE, 3);
 insert into card values ("3333333333333333", FALSE, 4);
 
-select card.number, card.isblocked, account.balance 
-	from account, card 
-	where account.client_id = 1 and 
-		account.id = card.account_id;
+select card.number, card.isblocked, account.balance from account, card where account.client_id = 1 and account.id = card.account_id;
 
+select account.* from card, account where card.number = 1111111111111111 and account.id = card.account_id;
+
+select card.number, card.isblocked, account.balance from account, card where card.number = 1111111111111111 and account.id = card.account_id
+
+create table transaction (
+	account_id integer,
+	amount integer,
+	timestamp datetime
+	);

@@ -1,4 +1,4 @@
-package giwi.client;
+package giwi.server;
 
 public class Account {
 	
@@ -13,8 +13,16 @@ public class Account {
 		this.client_id = client_id;
 	}
 	
+	public Integer getId() {
+		return id;
+	}
+
 	public Integer getBalance() {
 		return this.balance;
+	}
+
+	public Integer getClientId() {
+		return client_id;
 	}
 	
 	@Override
@@ -23,4 +31,5 @@ public class Account {
 				", balance=" + this.balance + 
 				", client_id=" + this.client_id + "]";
 	}
+
 }

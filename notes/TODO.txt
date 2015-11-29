@@ -33,10 +33,12 @@ ShowMorePagerPanel упрощённый вариант
 setters & getters in CardInfo
 админу имя клиента заблокированной карты
 _static_ final Logger logger
-onLineClients во внешний класс
 OnLineClientDB -> singleton
 GiwiServiceImpl.signOut, OnLineClientDB.deleteClientId
 deleteClientId когда клиент закрыл окно браузера
 TODO signOutSend
 giwiService public -> private ; uuid, clientName -> private
-
+security check in ..Impl
+share constants
+в лог не номер клиента, а его имя
+SecurityExeption

@@ -21,21 +21,19 @@ public interface GiwiService extends RemoteService {
 
 	List<CardInfo> getCardInfo(Long uuid);
 
-//	List<Account> getAccounts(Integer idClient) 
+	void sendTransaction(Long uuid, String cardNumber, Integer amount) 
+			throws IllegalArgumentException;
+
+	void sendDoBlockCard(Long uuid, String cardNumber) 
+			throws IllegalArgumentException;
+
+	List<String> getBlockedCards() throws IllegalArgumentException;
+
+	void sendUnblocking(Long uuid, String cardNumber) throws IllegalArgumentException;
+
+	//	List<Account> getAccounts(Integer idClient) 
 //			throws IllegalArgumentException;
 //	
-//	void sendTransaction(Integer idClient, String fromCard, 
-//		String toCard, Integer amount) 
-//			throws IllegalArgumentException;
-//
 //	void sendIncrement(Integer uuid, String cardNumber, Integer amount);
 //
-//	void sendBlockCard(Integer uuid, String cardNumber) 
-//			throws IllegalArgumentException;
-//
-//	List<Account> getBlockedCards()
-//			throws IllegalArgumentException;
-//
-//	void sendUnblocking(Integer uuid, String cardNumber)
-//			throws IllegalArgumentException;
 }

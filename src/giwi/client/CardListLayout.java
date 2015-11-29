@@ -35,10 +35,7 @@ public class CardListLayout extends Composite {
 	      sb.appendHtmlConstant("<table><tr><td>");
 	      sb.appendEscaped(card.getNumber());
 	      sb.appendHtmlConstant("</td></tr><tr><td>");
-	      sb.appendEscaped(card.getIsBlocked().toString());
-	      sb.appendHtmlConstant("</td><td>");
-	      sb.appendEscaped(card.getBalance().toString());
-	      sb.appendHtmlConstant("</td><td>");
+	      sb.appendEscaped(CardInfoForm.constants.cardStatuses()[card.getStatusId()]);
 	      sb.appendHtmlConstant("</td></tr></table>");
 		}
 	}
