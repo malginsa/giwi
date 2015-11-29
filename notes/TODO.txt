@@ -1,30 +1,14 @@
-
 TODO
 
-getClient and getAccount are similary..
+uuid !=0 для админа
 private GiwiServiceImpl.Logger
 logger into separate class + логиорвать, логировать, и ещё раз логировать
-Одномоментно одна сессия на каждого пользователя -- реализовать проверку
-Вынести Account из share в server, передавать клиенту только то, что он запросил.
-idClient заменить на uuid -- защита от поддельных транзакций от имени другого пользователя и для админа так же
 client input validation, amount in TextBox - only digits
-проверка возможности транзакции (amount > 0, на счету достаточно средств) FieldVerifier...
-Реализовать сущность счета
-проблема неконсистентности: decreaseBalance успешен, а storeTransaction нет
-если транзакция на карту, которая есть в системе, то пополнить её
-? карта пополнена кем-то во время платежа. Состояние счёта изменилось
-В интерфейсах GiwiService* client_id -> uuid
 длина строки < 80
-пополнение счёта,.. когда сервер недоступен
-повторная блокировка карты
-невозможность совершить операции, когда карта заблокирована
 админов может быть несколько
 проверить наличие throws IllegalArgumentException в GiwiService, *Impl, DBManager;
-List<Account> -> Accounts
 use ByePanel
 Panel -> UI
-Accounts -> Singleton
-русская локализация
 status -> locale key constants
 CardInfoForm.card упразнить, обновлять только через RPC
 активна - зелёный, заблокирована - красный
@@ -36,7 +20,6 @@ _static_ final Logger logger
 OnLineClientDB -> singleton
 GiwiServiceImpl.signOut, OnLineClientDB.deleteClientId
 deleteClientId когда клиент закрыл окно браузера
-TODO signOutSend
 giwiService public -> private ; uuid, clientName -> private
 security check in ..Impl
 share constants

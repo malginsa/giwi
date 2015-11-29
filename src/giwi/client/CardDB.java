@@ -2,7 +2,6 @@ package giwi.client;
 
 import java.util.List;
 
-import com.google.gwt.user.client.Random;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ListDataProvider;
 

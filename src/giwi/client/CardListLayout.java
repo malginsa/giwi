@@ -4,17 +4,16 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellList;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -22,6 +21,12 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import giwi.shared.CardInfo;
 
 public class CardListLayout extends Composite {
+
+	static interface LocaleConstants extends Constants {
+		String[] cardStatus();
+		String SingOutProcessMsg();
+		String SignOutDoneMsg();
+	}
 
 	interface Binder extends UiBinder<Widget, CardListLayout> { 
 	};
@@ -35,7 +40,7 @@ public class CardListLayout extends Composite {
 	      sb.appendHtmlConstant("<table><tr><td>");
 	      sb.appendEscaped(card.getNumber());
 	      sb.appendHtmlConstant("</td></tr><tr><td>");
-	      sb.appendEscaped(CardInfoForm.constants.cardStatuses()[card.getStatusId()]);
+	      sb.appendEscaped(constants.cardStatus()[card.getStatusId()]);
 	      sb.appendHtmlConstant("</td></tr></table>");
 		}
 	}
@@ -50,7 +55,11 @@ public class CardListLayout extends Composite {
 
 	private CellList<CardInfo> cellList;
 
+	private static LocaleConstants constants;
+
 	public CardListLayout() {
+
+		constants = GWT.create(LocaleConstants.class);
 
 		cellList = new CellList<CardInfo>(new CardCell(), CardInfo.KEY_PROVIDER);
 
@@ -77,12 +86,12 @@ public class CardListLayout extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 				RootPanel.get().clear();
-				RootPanel.get().add(new Label("Выполняется выход, пожалуйста, подождите..."));
-				GwtGiwi.giwiService.signOut(GwtGiwi.uuid, new AsyncCallback<Void>() {
+				RootPanel.get().add(new Label(constants.SingOutProcessMsg()));
+				ClientImplDB.giwiService.signOut(ClientImplDB.uuid, new AsyncCallback<Void>() {
 					@Override
 					public void onSuccess(Void result) {
 						RootPanel.get().clear();
-						RootPanel.get().add(new Label("Вы вышли из системы"));
+						RootPanel.get().add(new Label(constants.SignOutDoneMsg()));
 					}
 					@Override
 					public void onFailure(Throwable caught) {

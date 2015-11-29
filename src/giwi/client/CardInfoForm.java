@@ -14,7 +14,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -26,10 +25,17 @@ import giwi.shared.CardTransactionInfo;
 public class CardInfoForm extends Composite {
 
 	static interface LocaleConstants extends Constants {
-		String[] cardStatuses();
+		String[] cardStatus();
 		String amountDepositAsk();
 		String amountWithdrawalAsk();
 		String BalanceNegativeAlert();
+		String ChangeBalanceSuccessMsg();
+		String cardHasBlockedMsg();
+		String listOfTransactions();
+		String sumHeader();
+		String dateHeader();
+		String timeHeader();
+		String closeButton();
 	}
 
 	interface Binder extends UiBinder<Widget, CardInfoForm> {
@@ -55,14 +61,11 @@ public class CardInfoForm extends Composite {
 
 	private CardInfo selectedCard;
 
-	public final String[] statuses;
-
-	public static LocaleConstants constants;
+	private static LocaleConstants constants;
 
 	public CardInfoForm() {
 
 		constants = GWT.create(LocaleConstants.class);
-		statuses = constants.cardStatuses();
 
 		initWidget(uiBinder.createAndBindUi(this));
 
@@ -91,14 +94,16 @@ public class CardInfoForm extends Composite {
 		doBlockButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				GwtGiwi.giwiService.sendDoBlockCard(GwtGiwi.uuid, selectedCard.getNumber(), new AsyncCallback<Void>() {
+				ClientImplDB.giwiService.sendDoBlockCard(
+						ClientImplDB.uuid, selectedCard.getNumber(), 
+						new AsyncCallback<Void>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						Window.alert(caught.getMessage());
 					}
 					@Override
 					public void onSuccess(Void result) {
-						Window.alert("Карта заблокирована");
+						Window.alert(constants.cardHasBlockedMsg());
 						selectedCard.doBlock();
 						doRefreshLayout();
 					}
@@ -110,7 +115,8 @@ public class CardInfoForm extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 
-				GwtGiwi.giwiService.getTransactions(GwtGiwi.uuid, selectedCard.getNumber(), 
+				ClientImplDB.giwiService.getTransactions(
+						ClientImplDB.uuid, selectedCard.getNumber(), 
 						new AsyncCallback<List<CardTransactionInfo>>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -119,12 +125,16 @@ public class CardInfoForm extends Composite {
 					@Override
 					public void onSuccess(List<CardTransactionInfo> result) {
 						final DialogBox dialogBox = new DialogBox();
-						dialogBox.setText("Список транзакций");
-						final Button closeButton = new Button("Close");
+						dialogBox.setText(constants.listOfTransactions());
+						final Button closeButton = new Button(
+								constants.closeButton());
 						VerticalPanel dialogVPanel = new VerticalPanel();
 						SafeHtmlBuilder html = new SafeHtmlBuilder();
 						html.appendHtmlConstant("<table>");
-						html.appendHtmlConstant("<tr><td>сумма</td><td>дата</td><td>время</td></tr>");
+						html.appendHtmlConstant("<tr><td>" + 
+								constants.sumHeader() + "</td><td>" + 
+								constants.dateHeader() + "</td><td>" + 
+								constants.timeHeader() + "</td></tr>");
 						for (CardTransactionInfo transaction : result) {
 							html.appendHtmlConstant("<tr><td>");
 							html.appendEscaped(transaction.getAmount().toString());
@@ -136,7 +146,8 @@ public class CardInfoForm extends Composite {
 						}
 						html.appendHtmlConstant("</table>");
 						dialogVPanel.add(new HTMLPanel(html.toSafeHtml()));
-						dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+						dialogVPanel.setHorizontalAlignment(
+								VerticalPanel.ALIGN_RIGHT);
 						dialogVPanel.add(closeButton);
 						dialogBox.setWidget(dialogVPanel);
 						closeButton.addClickHandler(new ClickHandler() {
@@ -167,8 +178,8 @@ public class CardInfoForm extends Composite {
 			Window.alert(constants.BalanceNegativeAlert());
 			return;
 		}
-		GwtGiwi.giwiService.sendTransaction(GwtGiwi.uuid, selectedCard.getNumber(), 
-				amount, new AsyncCallback<Void>() {
+		ClientImplDB.giwiService.sendTransaction(ClientImplDB.uuid, 
+				selectedCard.getNumber(), amount, new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert(caught.getMessage());
@@ -178,7 +189,7 @@ public class CardInfoForm extends Composite {
 			public void onSuccess(Void result) {
 				selectedCard.setBalance(newBalance);
 				doRefreshLayout();
-				Window.alert("Баланс успешно изменён");
+				Window.alert(constants.ChangeBalanceSuccessMsg());
 			}
 		});
 	}
@@ -195,7 +206,7 @@ public class CardInfoForm extends Composite {
 		doBlockButton.setEnabled(isActive);
 		showTransactionsButton.setEnabled(true);
 		numberLabel.setText(selectedCard.getNumber().toString());
-		statusLabel.setText(statuses[selectedCard.getStatusId()]);
+		statusLabel.setText(constants.cardStatus()[selectedCard.getStatusId()]);
 		balanceLabel.setText(selectedCard.getBalance().toString());
 	}
 
