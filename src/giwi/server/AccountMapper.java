@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Update;
 
 //import giwi.client.Account;
 import giwi.shared.CardInfo;
+import giwi.shared.CardTransactionInfo;
 
 public interface AccountMapper {
 
@@ -32,10 +33,6 @@ public interface AccountMapper {
 	@Update("update card set isBlocked = FALSE where number = #{cardNumber}")
 	Integer unblockCard(String cardNumber);
 
-//	@Select("select card.number, card.isblocked, account.balance from account, card where card.number = #{cardNumber} and account.id = card.account_id")
-//	CardInfo getCardInfo(String cardNumber);
-//
-//	@Select("select * from account where client_id = #{client_id}")
-//	List<Account> getAccounts(Integer client_id);
-//
+	@Select("select transaction.amount, transaction.date, transaction.time from card, transaction where card.account_id = transaction.account_id and card.number = #{cardNumber}")
+	List<CardTransactionInfo> getTransactions(String cardNumber);
 }

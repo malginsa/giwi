@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import giwi.shared.CardInfo;
+import giwi.shared.CardTransactionInfo;
 
 /**
  * The async counterpart of <code>GiwiService</code>.
@@ -23,8 +24,10 @@ public interface GiwiServiceAsync {
 	void sendDoBlockCard(Long uuid, String cardNumber, AsyncCallback<Void> callback);
 
 	void getBlockedCards(AsyncCallback<List<String>> callback);
-
+	
 	void sendUnblocking(Long uuid, String cardNumber, AsyncCallback<Void> callback);
+	
+	void getTransactions(Long uuid, String cardNumber, AsyncCallback<List<CardTransactionInfo>> callback);
 
 //	void getAccounts(Integer idClient, AsyncCallback<List<Account>> callback);
 //

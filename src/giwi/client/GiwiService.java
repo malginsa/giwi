@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import giwi.shared.CardInfo;
+import giwi.shared.CardTransactionInfo;
 
 /**
  * The client-side stub for the RPC service.
@@ -30,10 +31,7 @@ public interface GiwiService extends RemoteService {
 	List<String> getBlockedCards() throws IllegalArgumentException;
 
 	void sendUnblocking(Long uuid, String cardNumber) throws IllegalArgumentException;
+	
+	List<CardTransactionInfo> getTransactions(Long uuid, String cardNumber) throws IllegalArgumentException;
 
-	//	List<Account> getAccounts(Integer idClient) 
-//			throws IllegalArgumentException;
-//	
-//	void sendIncrement(Integer uuid, String cardNumber, Integer amount);
-//
 }

@@ -42,3 +42,5 @@ security check in ..Impl
 share constants
 в лог не номер клиента, а его имя
 SecurityExeption
+giwi DB -> git репозиторий
+IllegalArgumentExeption -> return null

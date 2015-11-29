@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import giwi.shared.CardInfo;
+import giwi.shared.CardTransactionInfo;
 
 public class DBManager {
 
@@ -196,18 +197,19 @@ public class DBManager {
 		}
 	}
 
-//	public static CardInfo getCardInfo(String cardNumber) {
-//	SqlSession session = sqlSessionFactory.openSession();
-//	try {
-//		AccountMapper mapper = session.getMapper(AccountMapper.class);
-//		CardInfo cardInfo = mapper.getCardInfo(cardNumber);
-//		if (null == cardInfo) {
-//			throw new IllegalArgumentException("Информация о карте не найдена");
-//		}
-//		return cardInfo;
-//	} finally {
-//		session.close();
-//	}
-//}
-//
+	public static List<CardTransactionInfo> getTransactions(String cardNumber) {
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			AccountMapper mapper = session.getMapper(AccountMapper.class);
+
+			List<CardTransactionInfo> transactions = mapper.getTransactions(cardNumber);
+			if (null == transactions) {
+				throw new IllegalArgumentException("По данной карте транзакций нет");
+			}
+			return transactions;
+		} finally {
+			session.close();
+		}
+	}
+
 }

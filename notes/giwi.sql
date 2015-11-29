@@ -3,7 +3,6 @@ giwi.sql
 mysql -u giwi -pgiwi giwi
 SET NAMES utf8 COLLATE utf8_unicode_ci;
 
-
 create database giwi
 	CHARACTER SET utf8 
 	COLLATE utf8_unicode_ci;
@@ -66,3 +65,38 @@ create table transaction (
 	amount integer,
 	timestamp datetime
 	);
+
+select transaction.amount, transaction.timestamp from card, transaction where card.account_id = transaction.account_id and card.number = "1111111111111111";
+
+alter table transaction add column date date;
+alter table transaction add column time time;
+alter table transaction drop column timestamp;
+
+
+mysql -u giwi -pgiwi giwi
+select * from account where client_id = 1;
+select * from transaction;
+select * from card where isBlocked = TRUE
+
+
+
+
+-----   utf8  -----
+
+/etc/mysql/my.cnf :
+
+[client]
+default_character_set = utf8
+
+[mysqld]
+character-set-server = utf8
+collation-server = utf8_unicode_ci
+init_connect='SET collation_connection = utf8_unicode_ci'
+
+проверка:
+SHOW VARIABLES LIKE 'char%';
+SHOW VARIABLES LIKE 'collation%';
+
+если mysql -u root, то вручную:
+SET collation_connection = utf8_unicode_ci;
+

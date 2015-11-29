@@ -1,29 +1,34 @@
 package giwi.client;
 
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import giwi.shared.CardInfo;
+import giwi.shared.CardTransactionInfo;
 
 public class CardInfoForm extends Composite {
 
 	static interface LocaleConstants extends Constants {
 		String[] cardStatuses();
-
 		String amountDepositAsk();
-
 		String amountWithdrawalAsk();
-
 		String BalanceNegativeAlert();
 	}
 
@@ -104,7 +109,46 @@ public class CardInfoForm extends Composite {
 		showTransactionsButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO
+
+				GwtGiwi.giwiService.getTransactions(GwtGiwi.uuid, selectedCard.getNumber(), 
+						new AsyncCallback<List<CardTransactionInfo>>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+					}
+					@Override
+					public void onSuccess(List<CardTransactionInfo> result) {
+						final DialogBox dialogBox = new DialogBox();
+						dialogBox.setText("Список транзакций");
+						final Button closeButton = new Button("Close");
+						VerticalPanel dialogVPanel = new VerticalPanel();
+						SafeHtmlBuilder html = new SafeHtmlBuilder();
+						html.appendHtmlConstant("<table>");
+						html.appendHtmlConstant("<tr><td>сумма</td><td>дата</td><td>время</td></tr>");
+						for (CardTransactionInfo transaction : result) {
+							html.appendHtmlConstant("<tr><td>");
+							html.appendEscaped(transaction.getAmount().toString());
+							html.appendHtmlConstant("</td><td>");
+							html.appendEscaped(transaction.getDate().toString());
+							html.appendHtmlConstant("</td><td>");
+							html.appendEscaped(transaction.getTime().toString());
+							html.appendHtmlConstant("</td></tr>");
+						}
+						html.appendHtmlConstant("</table>");
+						dialogVPanel.add(new HTMLPanel(html.toSafeHtml()));
+						dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+						dialogVPanel.add(closeButton);
+						dialogBox.setWidget(dialogVPanel);
+						closeButton.addClickHandler(new ClickHandler() {
+							public void onClick(ClickEvent event) {
+								dialogBox.hide();
+							}
+						});
+						dialogBox.center();
+						closeButton.setFocus(true);
+					}
+				});
+				
 			}
 		});
 
@@ -113,7 +157,7 @@ public class CardInfoForm extends Composite {
 	private void changeBalance(String prompt, int factor) {
 
 		String res = Window.prompt(prompt, "");
-		// TODO только цифры
+// TODO только цифры
 		if (null == res) {
 			return;
 		}
@@ -123,7 +167,8 @@ public class CardInfoForm extends Composite {
 			Window.alert(constants.BalanceNegativeAlert());
 			return;
 		}
-		GwtGiwi.giwiService.sendTransaction(GwtGiwi.uuid, selectedCard.getNumber(), amount, new AsyncCallback<Void>() {
+		GwtGiwi.giwiService.sendTransaction(GwtGiwi.uuid, selectedCard.getNumber(), 
+				amount, new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert(caught.getMessage());

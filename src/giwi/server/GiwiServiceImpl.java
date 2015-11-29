@@ -2,6 +2,7 @@ package giwi.server;
 
 import giwi.client.GiwiService;
 import giwi.shared.CardInfo;
+import giwi.shared.CardTransactionInfo;
 import giwi.shared.FieldVerifier;
 
 import java.util.List;
@@ -47,6 +48,7 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 					"Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		onLineClientDB.deleteClientId(uuid);
+		logger.info(uuid + " logged out");
 		Utils.pause(1_000); // imitation of timeout to extract data from DB
 	}
 
@@ -155,6 +157,14 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 		DBManager.doUnblockCard(cardNumber);
 // TODO uuid -> idClient
 		logger.info("админ разблокировал карту " + cardNumber);
+	}
+
+	@Override
+	public List<CardTransactionInfo> getTransactions(Long uuid, String cardNumber) throws IllegalArgumentException {
+// TODO check uuid -> owner of cardNumber
+		List<CardTransactionInfo> transactions = DBManager.getTransactions(cardNumber);
+		logger.info(uuid + " запросил транзакции " + transactions);
+		return transactions;
 	}
 
 }

@@ -19,7 +19,7 @@ public class CardInfo implements Serializable {
 	private Boolean isBlocked;
 	private Integer balance;
 
-	// dedicated to GWT's serialization model
+	// for GWT's serialization model
 	private CardInfo() {}
 	
 	public CardInfo(String number, Boolean isBlocked, Integer balance) {

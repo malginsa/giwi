@@ -1,7 +1,6 @@
 
 mysql -u payments -p111 payments
-	SET NAMES utf8 
-	COLLATE utf8_unicode_ci;
+SET NAMES utf8 COLLATE utf8_unicode_ci;
 
 create database payments
 	CHARACTER SET utf8 
@@ -11,6 +10,11 @@ use payments;
 
 create table client (
 	id integer primary key auto_increment,
+	name varchar(255),
+	password varchar(255)
+	);
+
+create table admin (
 	name varchar(255),
 	password varchar(255)
 	);
@@ -28,11 +32,6 @@ create table transaction (
 	toCard varchar(16),
 	amount integer,
 	timestamp datetime
-	);
-
-create table admin (
-	name varchar(255),
-	password varchar(255)
 	);
 
 grant all on payments.* to 'payments' identified by '111';
