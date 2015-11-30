@@ -1,5 +1,12 @@
 package giwi.server;
 
+/**
+* Счёт клиента: 
+* id - он же номер счёта, 
+* balance - баланс,
+* client_id - id клиента - владельца счёта 
+*/
+
 public class Account {
 	
 	private Integer id;

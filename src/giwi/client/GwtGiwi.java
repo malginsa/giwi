@@ -24,6 +24,12 @@ import com.google.gwt.view.client.SingleSelectionModel;
 import giwi.shared.CardInfo;
 import giwi.shared.PersonInfo;
 
+/**
+ * Точка входа клиентской части приложения.
+ * Авторизация клиета и админа.
+ * Список заблокированных карт, разблокировка админом одной из них.
+ */
+
 public class GwtGiwi implements EntryPoint {
 
 	static interface LocaleConstants extends Constants {
@@ -82,7 +88,7 @@ public class GwtGiwi implements EntryPoint {
 							ClientImplDB.uuid = personInfo.getUuid();
 							if (personInfo.getStatus() == PersonInfo.Status.ADMIN) {
 								Window.alert(constants.signInAsAdminMsg());
-								adminPanel();
+								adminLayout();
 							} else {
 								acquireCardInfo();
 							}
@@ -102,7 +108,7 @@ public class GwtGiwi implements EntryPoint {
 
 	private void acquireCardInfo() {
 
-		showProcessingPanel(constants.dataProcessingMsg());
+		showProcessingLayout(constants.dataProcessingMsg());
 
 		ClientImplDB.giwiService.getCardInfo(ClientImplDB.uuid, 
 				new AsyncCallback<List<CardInfo>>() {
@@ -120,9 +126,9 @@ public class GwtGiwi implements EntryPoint {
 		});
 	}
 
-	private void adminPanel() { 
+	private void adminLayout() { 
 
-		showProcessingPanel(constants.dataProcessingMsg());
+		showProcessingLayout(constants.dataProcessingMsg());
 		ClientImplDB.giwiService.getBlockedCards(ClientImplDB.uuid,
 				new AsyncCallback<List<String>>() {
 			@Override
@@ -134,12 +140,12 @@ public class GwtGiwi implements EntryPoint {
 			}
 			@Override
 			public void onSuccess(List<String> result) {
-				BlockedCardsSelectionPanel(result);
+				BlockedCardsSelectionLayout(result);
 			}
 		});
 	}
 
-	private void BlockedCardsSelectionPanel(List<String> cardNumbers) {
+	private void BlockedCardsSelectionLayout(List<String> cardNumbers) {
 		RootPanel.get().clear();
 		RootPanel.get().add(new Label(constants.chooseCardToUnblockAsk()));
 
@@ -163,23 +169,23 @@ public class GwtGiwi implements EntryPoint {
 	}
 
 	private void doUnblockCard(String CardNumber) {
-		showProcessingPanel(constants.unblockingInProcessMsg());
+		showProcessingLayout(constants.unblockingInProcessMsg());
 		ClientImplDB.giwiService.sendDoUnblock(ClientImplDB.uuid, CardNumber, 
 				new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert(caught.getMessage());
-				adminPanel();
+				adminLayout();
 			}
 			@Override
 			public void onSuccess(Void result) {
 				Window.alert(constants.cardIsUnblockedMsg());
-				adminPanel();
+				adminLayout();
 			}
 		});
 	}
 
-	private void showProcessingPanel(String message) {
+	private void showProcessingLayout(String message) {
 		RootPanel.get().clear();
 		RootPanel.get().add(new Label(message + constants.pleaseWaitMsg()));
 	}

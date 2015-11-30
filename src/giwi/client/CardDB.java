@@ -7,6 +7,11 @@ import com.google.gwt.view.client.ListDataProvider;
 
 import giwi.shared.CardInfo;
 
+/**
+ * Класс позаимствован из gwt shocases. Используется для визуализации  
+ * списка объектов CardInfo
+ */
+
 public class CardDB {
 
 	private static CardDB instance;

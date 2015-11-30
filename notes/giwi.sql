@@ -67,7 +67,8 @@ select card.number, card.isblocked, account.balance from account, card where car
 create table transaction (
 	account_id integer,
 	amount integer,
-	timestamp datetime
+	date date,
+	time time,
 	);
 
 select transaction.amount, transaction.timestamp from card, transaction where card.account_id = transaction.account_id and card.number = "1111111111111111";

@@ -1,5 +1,10 @@
 package giwi.server;
 
+/**
+* Карта клиента: номер карты - строка 16 символов, 
+* заблокирована или активна, id счёта, к которому она привязана
+*/
+
 public class Card {
 
 	private String number;

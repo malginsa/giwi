@@ -1,5 +1,9 @@
 package giwi.server;
 
+/**
+ * Вспомогательные утилиты
+ */
+
 public class Utils {
 
 	public static void pause(long millis) {
@@ -10,13 +14,4 @@ public class Utils {
 		}
 	}
 
-	public static void pauseThrowable(long millis) throws InterruptedException {
-		try {
-			Thread.sleep(millis);
-		} catch (InterruptedException e) {
-			System.out.println("pause interrupted");
-			throw e;
-		}
-	}
-	
 }

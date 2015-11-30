@@ -1,5 +1,9 @@
 package giwi.server;
 
+/**
+* Информация о клиенте: id, имя пароль
+*/
+
 public class Client {
 	private Integer id;
 	private String name;

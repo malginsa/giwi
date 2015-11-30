@@ -11,12 +11,11 @@ public class PersonInfo implements Serializable{
 	private static final long serialVersionUID = 5621635506413600298L;
 
 	private Long uuid;
-	private Boolean isAdmin;
-
 	private Status status;
 	
 	public static enum Status {ADMIN, CLIENT}
 	
+	@SuppressWarnings("unused")
 	private PersonInfo() {}
 	
 	public PersonInfo(Long uuid, Status status) {

@@ -9,6 +9,22 @@ import org.apache.ibatis.annotations.Update;
 import giwi.shared.CardInfo;
 import giwi.shared.TransactionInfo;
 
+/**
+* Мэпер таблиц счетов и карт.
+* 
+* create table account (
+* 	id integer primary key auto_increment,		# id счёта
+* 	balance integer,		# баланс
+* 	client_id integer		# id клиента - владельца счёта
+* );
+* 
+* create table card (
+* 	number varchar(16),		# номер карты
+* 	isBlocked bit,		# заблокирована или активна
+* 	account_id integer		# номер привязанного счёта
+* );
+*/
+
 public interface AccountMapper {
 
 	@Select("select card.number, card.isblocked, account.balance from account, card where account.client_id = #{clientId} and account.id = card.account_id")

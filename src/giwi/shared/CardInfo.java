@@ -3,6 +3,12 @@ package giwi.shared;
 import java.io.Serializable;
 import com.google.gwt.view.client.ProvidesKey;
 
+/**
+ * Информация о карте, которая передаётся клиенту 
+ * агрегируется из классов Card и Account:
+ * номер карты клиента, заблокирована или активна, баланс на счёте
+ */
+
 public class CardInfo implements Serializable {
 
 	private static final long serialVersionUID = -3469183068442440482L;
@@ -19,7 +25,8 @@ public class CardInfo implements Serializable {
 	private Boolean isBlocked;
 	private Integer balance;
 
-	// for GWT's serialization model
+	// used by GWT's serialization model
+	@SuppressWarnings("unused")
 	private CardInfo() {}
 	
 	public CardInfo(String number, Boolean isBlocked, Integer balance) {

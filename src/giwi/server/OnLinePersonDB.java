@@ -7,6 +7,11 @@ import java.util.TreeSet;
 
 import giwi.shared.SecurityViolationException;
 
+/**
+ * Каждый клиент и админ, зайдя в систему получает uuid, 
+ * легитимность которого проверяется при каждом RPC-сообщении
+ */
+
 public class OnLinePersonDB {
 
 	private TreeSet<Integer> personSet;
@@ -32,7 +37,7 @@ public class OnLinePersonDB {
 		return uuid;
 	}
 	
-	// возвращает id удалённой персоны
+	// возвращает id персоны
 	public Integer removePersonId(Long uuid) 
 			throws SecurityViolationException 
 	{

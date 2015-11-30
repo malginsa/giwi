@@ -17,10 +17,13 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * The server-side implementation of the RPC service.
  */
-@SuppressWarnings("serial")
-public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService {
 
-	private final Logger logger = LogManager.getLogger(GiwiServiceImpl.class.getName());
+@SuppressWarnings("serial")
+public class GiwiServiceImpl extends RemoteServiceServlet 
+		implements GiwiService {
+
+	private final Logger logger = 
+			LogManager.getLogger(GiwiServiceImpl.class.getName());
 
 	OnLinePersonDB onLineClients;
 	OnLinePersonDB onLineAdmins;
@@ -89,7 +92,8 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 			Utils.pause(2_000); // Имитация задержки при запросе к БД
 			return;
 		}
-		logger.warn("SECURITY VIOLATION: Sign Out from non-existent uuid detected");
+		logger.warn("SECURITY VIOLATION: "
+				+ "Sign Out from non-existent uuid detected");
 		throw new SecurityViolationException(
 				"Обратитесь в нашу службу безопасности за разъяснениями");
 	}
@@ -100,9 +104,10 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 	{
 		// Проверка наличия uuid в базе сессий
 		if (!onLineClients.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: request from non-existent uuid detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: "
+					+ "request from non-existent uuid detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		Integer clientId = onLineClients.getId(uuid);
 		List<CardInfo> cardInfo = DBManager.getCardInfo(clientId);
@@ -118,9 +123,10 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 			throws IllegalArgumentException, SecurityViolationException 
 	{
 		if (!onLineClients.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: transaction from non-existent uuid detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: "
+					+ "transaction from non-existent uuid detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		Integer clientId = onLineClients.getId(uuid);
 		String name = DBManager.getClientName(clientId);
@@ -130,42 +136,51 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 		try {
 			clientIdByCard = DBManager.getClientId(cardNumber);
 		} catch (Exception e) {
-			logger.warn("SECURITY VIOLATION: transaction by client " + name + " with fake card number detected");
+			logger.warn("SECURITY VIOLATION: transaction by client " + 
+					name + " with fake card number detected");
 			logger.warn(e.getMessage());
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		// Проверка принадлежности карты клиенту
 		if (clientIdByCard != clientId) {
-			logger.warn("SECURITY VIOLATION: transaction by client " + name + " with fake card number detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: transaction by client " + 
+					name + " with fake card number detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
-		// Попытка обхода на клиентской стороне проверки списания с отрицательным балансом
+		// Попытка обхода на клиентской стороне 
+		// проверки списания с отрицательным балансом
 		Account account = DBManager.getAccount(cardNumber);
 		Integer balance = account.getBalance();
 		if (balance < amount) {
-			logger.warn("SECURITY VIOLATION: client " + name + " is trying to withdrawal from card " + cardNumber + "with negative balance in summary");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: client " + 
+					name + " is trying to withdrawal from card " + 
+					cardNumber + "with negative balance in summary");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 
-		// Проветка обхода на клиентской стороне проверки списания с заблокированной карты
+		// Проветка обхода на клиентской стороне 
+		// проверки списания с заблокированной карты
 		Card card = DBManager.getCard(cardNumber);
 		Boolean isBlocked = card.getIsBlocked();
 		if (isBlocked) {
-			logger.warn("SECURITY VIOLATION: client " + name + " is trying to withdraw from blocking card " + cardNumber);
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: client " + 	name + 
+					" is trying to withdraw from blocking card " + cardNumber);
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		Integer accountId = account.getId();
 		DBManager.changeBalance(accountId, amount);
-		logger.info("клиент " + name + " пополнил карту " + cardNumber + " на сумму " + amount);
+		logger.info("клиент " + name + " пополнил карту " + cardNumber + 
+				" на сумму " + amount);
 		DBManager.storeTransaction(new Transaction(accountId, amount));
-		logger.info("клиент " + name + " совершил транзакцию с карты " + cardNumber + " на сумму: " + amount);
+		logger.info("клиент " + name + " совершил транзакцию с карты " + 
+				cardNumber + " на сумму: " + amount);
 	}
 
 	@Override
@@ -173,9 +188,10 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 			throws IllegalArgumentException, SecurityViolationException {
 
 		if (!onLineClients.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: block card operation from non-existent uuid detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: "
+					+ "block card operation from non-existent uuid detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		Integer clientId = onLineClients.getId(uuid);
 		String name = DBManager.getClientName(clientId);
@@ -185,17 +201,21 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 		try {
 			clientIdByCard = DBManager.getClientId(cardNumber);
 		} catch (Exception e) {
-			logger.warn("SECURITY VIOLATION: block card operation by client " + name + " with fake card number detected");
+			logger.warn("SECURITY VIOLATION: "
+					+ "block card operation by client " + name + 
+					" with fake card number detected");
 			logger.warn(e.getMessage());
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		// Проверка принадлежности карты клиенту
 		if (clientIdByCard != clientId) {
-			logger.warn("SECURITY VIOLATION: block card operation by client " + name + " with fake card number detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: "
+					+ "block card operation by client " + name + 
+					" with fake card number detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		DBManager.doBlockCard(cardNumber);
@@ -207,9 +227,10 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 			throws IllegalArgumentException, SecurityViolationException 
 	{
 		if (!onLineAdmins.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: list of blocked cards query from non-existent uuid detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: list of blocked cards query "
+					+ "from non-existent uuid detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		Integer adminId = onLineAdmins.getId(uuid);
 		String name = DBManager.getAdminName(adminId);
@@ -229,9 +250,10 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 			throws IllegalArgumentException, SecurityViolationException 
 	{
 		if (!onLineAdmins.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: unblock operation from non-existent uuid detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: "
+					+ "unblock operation from non-existent uuid detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		Integer adminId = onLineAdmins.getId(uuid);
 		String name = DBManager.getAdminName(adminId);
@@ -244,9 +266,10 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 			throws IllegalArgumentException, SecurityViolationException 
 	{
 		if (!onLineClients.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: block operation from non-existent uuid detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: "
+					+ "block operation from non-existent uuid detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		Integer clientId = onLineClients.getId(uuid);
 		String name = DBManager.getClientName(clientId);
@@ -256,20 +279,23 @@ public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService
 		try {
 			clientIdByCard = DBManager.getClientId(cardNumber);
 		} catch (Exception e) {
-			logger.warn("SECURITY VIOLATION: query transactions by client " + name + " with fake card number detected");
+			logger.warn("SECURITY VIOLATION: query transactions by client " + 
+					name + " with fake card number detected");
 			logger.warn(e.getMessage());
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		// Проверка принадлежности карты клиенту
 		if (clientIdByCard != clientId) {
-			logger.warn("SECURITY VIOLATION: query transactions by client " + name + " with fake card number detected");
-			throw new SecurityViolationException(
-					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+			logger.warn("SECURITY VIOLATION: query transactions by client " + 
+					name + " with fake card number detected");
+			throw new SecurityViolationException("Отклонено. "
+					+ "Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 
-		List<TransactionInfo> transactions = DBManager.getTransactions(cardNumber);
+		List<TransactionInfo> transactions = 
+				DBManager.getTransactions(cardNumber);
 		logger.info("клиент " + name + " запросил транзакции " + transactions);
 		return transactions;
 	}

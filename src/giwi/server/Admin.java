@@ -1,5 +1,9 @@
 package giwi.server;
 
+/**
+* Информация о админе: его id, имя, пароль
+*/
+
 public class Admin {
 
 	private Integer id;
@@ -19,17 +23,5 @@ public class Admin {
 	public Integer getId() {
 		return id;
 	}
-
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-//
-//	public String getPassword() {
-//		return password;
-//	}
-//
-//	public void setPassword(String password) {
-//		this.password = password;
-//	}
 
 }

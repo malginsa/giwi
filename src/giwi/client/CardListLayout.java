@@ -20,6 +20,11 @@ import com.google.gwt.view.client.SingleSelectionModel;
 
 import giwi.shared.CardInfo;
 
+/**
+ * Виждет клиентской части на котором размещены:
+ * список карт клиента, CardInfoForm виджет, кнопка "выйти"
+ */
+
 public class CardListLayout extends Composite {
 
 	static interface LocaleConstants extends Constants {
@@ -51,7 +56,6 @@ public class CardListLayout extends Composite {
 	Button signOutButton;
 	@UiField
 	ShowMorePagerPanel pagerPanel;
-//	ScrollPanel scroller;
 
 	private CellList<CardInfo> cellList;
 
@@ -79,7 +83,6 @@ public class CardListLayout extends Composite {
 
 		CardDB.get().addDataDisplay(cellList);
 
-//		scroller.add(cellList);
 		pagerPanel.setDisplay(cellList);
 
 		signOutButton.addClickHandler(new ClickHandler() {

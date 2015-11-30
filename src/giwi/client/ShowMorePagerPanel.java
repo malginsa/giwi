@@ -8,6 +8,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasRows;
 
 /**
+ * Класс позаимствован из gwt showcases
+ * 
  * A scrolling pager that automatically increases the range every time the
  * scroll bar reaches the bottom.
  */

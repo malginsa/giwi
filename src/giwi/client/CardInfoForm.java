@@ -22,6 +22,13 @@ import com.google.gwt.user.client.ui.Widget;
 import giwi.shared.CardInfo;
 import giwi.shared.TransactionInfo;
 
+/**
+ * Композитный виджет. 
+ * Визуализирует клиенту информацию о карте: номер, статус, баланс. 
+ * Содержит кнопки операций с картой: пополнить, оплатить, заблокировать,
+ * просмотреть список транзакций.
+ */
+
 public class CardInfoForm extends Composite {
 
 	static interface LocaleConstants extends Constants {

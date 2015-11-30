@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
+/**
+ * Информация, предоставляетая клиенту о транзакциях:
+ * сумма транзакции, дата, время
+ */
+
 public class TransactionInfo implements Serializable{
 
 	private static final long serialVersionUID = 5143763598593988899L;
@@ -12,6 +17,7 @@ public class TransactionInfo implements Serializable{
 	private Date date;
 	private Time time;
 	
+	@SuppressWarnings("unused")
 	private TransactionInfo() {}
 	
 	public TransactionInfo(Integer amount, Date date, Time time) {

@@ -8,12 +8,10 @@ public class SecurityViolationException extends Exception implements Serializabl
 
 	private String message;
 	
-	private SecurityViolationException() {
-		this("Security violation");
-	}
+	@SuppressWarnings("unused")
+	private SecurityViolationException() {	}
 	
 	public SecurityViolationException(String message) {
-//		super(message);
 		this.message = message;
 	}
 	

@@ -13,6 +13,10 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import giwi.shared.CardInfo;
 import giwi.shared.TransactionInfo;
 
+/**
+ * Менеджер база данных
+ */
+
 public class DBManager {
 
 	private static SqlSessionFactory sqlSessionFactory;
