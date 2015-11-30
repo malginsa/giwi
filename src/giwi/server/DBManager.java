@@ -11,7 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import giwi.shared.CardInfo;
-import giwi.shared.CardTransactionInfo;
+import giwi.shared.TransactionInfo;
 
 public class DBManager {
 
@@ -36,7 +36,7 @@ public class DBManager {
 		SqlSession session = sqlSessionFactory.openSession();
 		try {
 			AdminMapper mapper = session.getMapper(AdminMapper.class);
-			Admin admin = mapper.getAdmin(name, password);
+			Admin admin = mapper.getAdminByName(name, password);
 			return null != admin;
 		} finally {
 			session.close();
@@ -44,21 +44,65 @@ public class DBManager {
 	}
 	
 	public static Integer getClientId(String name, String password) 
-		throws IllegalArgumentException
-	{
+			throws IllegalArgumentException
+		{
+			SqlSession session = sqlSessionFactory.openSession();
+			try {
+				ClientMapper mapper = session.getMapper(ClientMapper.class);
+				Client client = mapper.getClientByName(name, password);
+				if (null == client) {
+					throw new IllegalArgumentException("Неверное имя или пароль");
+				}
+				return client.getId();
+			} finally {
+				session.close();
+			}
+		}
+
+	public static Integer getAdminId(String name, String password) 
+			throws IllegalArgumentException
+		{
+			SqlSession session = sqlSessionFactory.openSession();
+			try {
+				AdminMapper mapper = session.getMapper(AdminMapper.class);
+				Admin admin = mapper.getAdminByName(name, password);
+				if (null == admin) {
+					throw new IllegalArgumentException("Неверное имя или пароль");
+				}
+				return admin.getId();
+			} finally {
+				session.close();
+			}
+		}
+
+	public static String getClientName(Integer clientId) {
 		SqlSession session = sqlSessionFactory.openSession();
 		try {
 			ClientMapper mapper = session.getMapper(ClientMapper.class);
-			Client client = mapper.getClient(name, password);
+			Client client = mapper.getClientById(clientId);
 			if (null == client) {
-				throw new IllegalArgumentException("Неверное имя или пароль");
+				throw new IllegalArgumentException("Клиент не найден");
 			}
-			return client.getId();
+			return client.getName();
 		} finally {
 			session.close();
 		}
 	}
-
+	
+	public static String getAdminName(Integer adminId) {
+		SqlSession session = sqlSessionFactory.openSession();
+		try {
+			AdminMapper mapper = session.getMapper(AdminMapper.class);
+			Admin admin = mapper.getAdminById(adminId);
+			if (null == admin) {
+				throw new IllegalArgumentException("Администратор не найден");
+			}
+			return admin.getName();
+		} finally {
+			session.close();
+		}
+	}
+	
 	public static Integer getClientId(String cardNumber) 
 			throws IllegalArgumentException 
 	{
@@ -164,7 +208,7 @@ public class DBManager {
 }
 
 
-	public static List<String> getBlockedCards() {
+	public static List<String> getBlockedCards() throws IllegalArgumentException {
 		SqlSession session = sqlSessionFactory.openSession();
 		try {
 			AccountMapper mapper = session.getMapper(AccountMapper.class);
@@ -197,12 +241,12 @@ public class DBManager {
 		}
 	}
 
-	public static List<CardTransactionInfo> getTransactions(String cardNumber) {
+	public static List<TransactionInfo> getTransactions(String cardNumber) {
 		SqlSession session = sqlSessionFactory.openSession();
 		try {
 			AccountMapper mapper = session.getMapper(AccountMapper.class);
 
-			List<CardTransactionInfo> transactions = mapper.getTransactions(cardNumber);
+			List<TransactionInfo> transactions = mapper.getTransactions(cardNumber);
 			if (null == transactions) {
 				throw new IllegalArgumentException("По данной карте транзакций нет");
 			}

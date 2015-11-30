@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import giwi.shared.CardInfo;
-import giwi.shared.CardTransactionInfo;
+import giwi.shared.TransactionInfo;
 
 public class CardInfoForm extends Composite {
 
@@ -117,13 +117,13 @@ public class CardInfoForm extends Composite {
 
 				ClientImplDB.giwiService.getTransactions(
 						ClientImplDB.uuid, selectedCard.getNumber(), 
-						new AsyncCallback<List<CardTransactionInfo>>() {
+						new AsyncCallback<List<TransactionInfo>>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						Window.alert(caught.getMessage());
 					}
 					@Override
-					public void onSuccess(List<CardTransactionInfo> result) {
+					public void onSuccess(List<TransactionInfo> result) {
 						final DialogBox dialogBox = new DialogBox();
 						dialogBox.setText(constants.listOfTransactions());
 						final Button closeButton = new Button(
@@ -135,7 +135,7 @@ public class CardInfoForm extends Composite {
 								constants.sumHeader() + "</td><td>" + 
 								constants.dateHeader() + "</td><td>" + 
 								constants.timeHeader() + "</td></tr>");
-						for (CardTransactionInfo transaction : result) {
+						for (TransactionInfo transaction : result) {
 							html.appendHtmlConstant("<tr><td>");
 							html.appendEscaped(transaction.getAmount().toString());
 							html.appendHtmlConstant("</td><td>");

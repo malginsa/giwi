@@ -2,9 +2,11 @@ package giwi.server;
 
 import giwi.client.GiwiService;
 import giwi.shared.CardInfo;
-import giwi.shared.CardTransactionInfo;
-import giwi.shared.FieldVerifier;
+import giwi.shared.TransactionInfo;
+import giwi.shared.PersonInfo;
+import giwi.shared.SecurityViolationException;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -18,152 +20,257 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class GiwiServiceImpl extends RemoteServiceServlet implements GiwiService {
 
-	static final Logger logger = LogManager.getLogger(GiwiServiceImpl.class.getName());
+	private final Logger logger = LogManager.getLogger(GiwiServiceImpl.class.getName());
 
-	OnLineClientDB onLineClientDB;
+	OnLinePersonDB onLineClients;
+	OnLinePersonDB onLineAdmins;
 	
 	{
-		onLineClientDB = new OnLineClientDB();
+		try {
+			onLineClients = new OnLinePersonDB();
+			onLineAdmins = new OnLinePersonDB();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
-	public Long signIn(String name, String password) 
-			throws IllegalArgumentException 
+	public PersonInfo signIn(String name, String password) 
+			throws IllegalArgumentException, SecurityViolationException 
 	{
 		if (DBManager.isAdmin(name, password)) {
-			logger.info("admin " + name + " logged in");
-			return 0L;
+			Integer adminId = DBManager.getAdminId(name, password);
+			Long uuid;
+			try {
+				uuid = onLineAdmins.addPersonId(adminId);
+			} catch (SecurityViolationException e) {
+				logger.info("admin " + name + e.getMessage());
+				throw e;
+			}
+			logger.info("admin " + name + " signed in");
+			return new PersonInfo(uuid, PersonInfo.Status.ADMIN);
+		} else {
+			Integer clientId = DBManager.getClientId(name, password);
+			Long uuid;
+			try {
+				uuid = onLineClients.addPersonId(clientId);				
+			} catch (SecurityViolationException e) {
+				logger.info("client " + name + e.getMessage());
+				throw e;
+			}
+			logger.info("client " + name + " signed in");
+			return new PersonInfo(uuid, PersonInfo.Status.CLIENT);
 		}
-		Integer clientId = DBManager.getClientId(name, password);
-		logger.info(name + " logged in");
-		Long uuid = onLineClientDB.addClienId(clientId);
-		return uuid;
 	}
 
 	@Override
-	public void signOut(Long uuid) {
-		if (!onLineClientDB.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: Sign Out from non-existent uuid detected");
-			throw new IllegalArgumentException(
-					"Обратитесь в нашу службу безопасности за разъяснениями");
+	public void signOut(Long uuid) throws SecurityViolationException {
+		if (onLineClients.isUuidExist(uuid)) {
+			Integer id;
+			try {
+				id = onLineClients.removePersonId(uuid);
+			} catch (SecurityViolationException e) {
+				logger.info("uuid=" + uuid + e.getMessage());
+				return;
+			}
+			logger.info(DBManager.getClientName(id) + " signed out");
+			Utils.pause(2_000); // Имитация задержки при запросе к БД
+			return;
 		}
-		onLineClientDB.deleteClientId(uuid);
-		logger.info(uuid + " logged out");
-		Utils.pause(1_000); // imitation of timeout to extract data from DB
+		if (onLineAdmins.isUuidExist(uuid)) {
+			Integer id;
+			try {
+				id = onLineAdmins.removePersonId(uuid);
+			} catch (SecurityViolationException e) {
+				logger.info("uuid=" + uuid + e.getMessage());
+				return;
+			}
+			logger.info("admin " + DBManager.getAdminName(id) + " signed out");
+			Utils.pause(2_000); // Имитация задержки при запросе к БД
+			return;
+		}
+		logger.warn("SECURITY VIOLATION: Sign Out from non-existent uuid detected");
+		throw new SecurityViolationException(
+				"Обратитесь в нашу службу безопасности за разъяснениями");
 	}
 
 	@Override
 	public List<CardInfo> getCardInfo(Long uuid) 
-			throws IllegalArgumentException
+			throws IllegalArgumentException, SecurityViolationException
 	{
-		if (!onLineClientDB.isUuidExist(uuid)) {
+		// Проверка наличия uuid в базе сессий
+		if (!onLineClients.isUuidExist(uuid)) {
 			logger.warn("SECURITY VIOLATION: request from non-existent uuid detected");
-			throw new IllegalArgumentException(
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
-		Integer clientId = onLineClientDB.getClientId(uuid);
-		List<CardInfo> result = DBManager.getCardInfo(clientId);
-		logger.info("client with " + clientId + " requested CardInfo: " + result);
-		Utils.pause(1_000); // imitation of timeout to extract data from DB
-		return result;
+		Integer clientId = onLineClients.getId(uuid);
+		List<CardInfo> cardInfo = DBManager.getCardInfo(clientId);
+		String name = DBManager.getClientName(clientId);
+		logger.info("client " + name + " requested CardInfo: " + cardInfo);
+		Utils.pause(1_000); // Имитация задержки при запросе к БД
+		return cardInfo;
 	}
 
 
 	@Override
 	public void sendTransaction(Long uuid, String cardNumber, Integer amount) 
-			throws IllegalArgumentException 
+			throws IllegalArgumentException, SecurityViolationException 
 	{
-		if (!onLineClientDB.isUuidExist(uuid)) {
+		if (!onLineClients.isUuidExist(uuid)) {
 			logger.warn("SECURITY VIOLATION: transaction from non-existent uuid detected");
-			throw new IllegalArgumentException(
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
-		Integer clientIdFromDB;
+		Integer clientId = onLineClients.getId(uuid);
+		String name = DBManager.getClientName(clientId);
+		Integer clientIdByCard;
+		
+		// Проверка наличия карты
 		try {
-			clientIdFromDB = DBManager.getClientId(cardNumber);
+			clientIdByCard = DBManager.getClientId(cardNumber);
 		} catch (Exception e) {
+			logger.warn("SECURITY VIOLATION: transaction by client " + name + " with fake card number detected");
 			logger.warn(e.getMessage());
-			throw new IllegalArgumentException(
-					"Сбой в системе. Обратитесь в нашу службу поддержки");
-		}
-		Integer clientId = onLineClientDB.getClientId(uuid);
-		if (clientIdFromDB != clientId) {
-			logger.warn("SECURITY VIOLATION: transaction from fake uuid detected");
-			throw new IllegalArgumentException(
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
+		// Проверка принадлежности карты клиенту
+		if (clientIdByCard != clientId) {
+			logger.warn("SECURITY VIOLATION: transaction by client " + name + " with fake card number detected");
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+		
+		// Попытка обхода на клиентской стороне проверки списания с отрицательным балансом
 		Account account = DBManager.getAccount(cardNumber);
 		Integer balance = account.getBalance();
 		if (balance < amount) {
-			logger.warn("SECURITY VIOLATION: Недостаточно средств для списания с карты номер " + cardNumber);
-			throw new IllegalArgumentException(
+			logger.warn("SECURITY VIOLATION: client " + name + " is trying to withdrawal from card " + cardNumber + "with negative balance in summary");
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 
+		// Проветка обхода на клиентской стороне проверки списания с заблокированной карты
 		Card card = DBManager.getCard(cardNumber);
 		Boolean isBlocked = card.getIsBlocked();
 		if (isBlocked) {
-			logger.warn("SECURITY VIOLATION: Попытка списания с заблокированной карты номер " + cardNumber);
-			throw new IllegalArgumentException(
+			logger.warn("SECURITY VIOLATION: client " + name + " is trying to withdraw from blocking card " + cardNumber);
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		Integer accountId = account.getId();
 		DBManager.changeBalance(accountId, amount);
-		logger.info("карта " + cardNumber + " пополнена на " + amount);
+		logger.info("клиент " + name + " пополнил карту " + cardNumber + " на сумму " + amount);
 		DBManager.storeTransaction(new Transaction(accountId, amount));
-		logger.info(clientId + " совершил транзакцию с карты " + cardNumber + " на сумму: " + amount);
+		logger.info("клиент " + name + " совершил транзакцию с карты " + cardNumber + " на сумму: " + amount);
 	}
 
 	@Override
-	public void sendDoBlockCard(Long uuid, String cardNumber) throws IllegalArgumentException {
+	public void sendDoBlockCard(Long uuid, String cardNumber) 
+			throws IllegalArgumentException, SecurityViolationException {
 
-		if (!onLineClientDB.isUuidExist(uuid)) {
-			logger.warn("SECURITY VIOLATION: block operation from non-existent uuid detected");
-			throw new IllegalArgumentException(
+		if (!onLineClients.isUuidExist(uuid)) {
+			logger.warn("SECURITY VIOLATION: block card operation from non-existent uuid detected");
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
-		Integer clientIdFromDB;
+		Integer clientId = onLineClients.getId(uuid);
+		String name = DBManager.getClientName(clientId);
+		Integer clientIdByCard;
+		
+		// Проверка наличия карты
 		try {
-			clientIdFromDB = DBManager.getClientId(cardNumber);
+			clientIdByCard = DBManager.getClientId(cardNumber);
 		} catch (Exception e) {
+			logger.warn("SECURITY VIOLATION: block card operation by client " + name + " with fake card number detected");
 			logger.warn(e.getMessage());
-			throw new IllegalArgumentException(
-					"Сбой в системе. Обратитесь в нашу службу поддержки");
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
-		Integer clientId = onLineClientDB.getClientId(uuid);
-		if (clientIdFromDB != clientId) {
-			logger.warn("SECURITY VIOLATION: block operation from fake uuid detected");
-			throw new IllegalArgumentException(
+		
+		// Проверка принадлежности карты клиенту
+		if (clientIdByCard != clientId) {
+			logger.warn("SECURITY VIOLATION: block card operation by client " + name + " with fake card number detected");
+			throw new SecurityViolationException(
 					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
 		}
 		
 		DBManager.doBlockCard(cardNumber);
-		logger.info(clientId + " заблокировал карту " + cardNumber);
+		logger.info("клиент " + name + " заблокировал карту " + cardNumber);
 	}
 
 	@Override
-	public List<String> getBlockedCards() throws IllegalArgumentException {
-// TODO проверить, что uuid принадлежит админу
-		List<String> result = DBManager.getBlockedCards();
-		logger.info("admin requested blocked cards: " + result);
+	public List<String> getBlockedCards(Long uuid) 
+			throws IllegalArgumentException, SecurityViolationException 
+	{
+		if (!onLineAdmins.isUuidExist(uuid)) {
+			logger.warn("SECURITY VIOLATION: list of blocked cards query from non-existent uuid detected");
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+		Integer adminId = onLineAdmins.getId(uuid);
+		String name = DBManager.getAdminName(adminId);
+		List<String> result;
+		try {
+			result = DBManager.getBlockedCards();
+		} catch (IllegalArgumentException e) {
+			this.signOut(uuid);
+			throw e;
+		}
+		logger.info("admin " + name + " requested blocked cards: " + result);
 		return result;
 	}
 
 	@Override
-	public void sendUnblocking(Long uuid, String cardNumber) throws IllegalArgumentException {
-// TODO uuid - admin
+	public void sendDoUnblock(Long uuid, String cardNumber) 
+			throws IllegalArgumentException, SecurityViolationException 
+	{
+		if (!onLineAdmins.isUuidExist(uuid)) {
+			logger.warn("SECURITY VIOLATION: unblock operation from non-existent uuid detected");
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+		Integer adminId = onLineAdmins.getId(uuid);
+		String name = DBManager.getAdminName(adminId);
 		DBManager.doUnblockCard(cardNumber);
-// TODO uuid -> idClient
-		logger.info("админ разблокировал карту " + cardNumber);
+		logger.info("админ " + name + " разблокировал карту " + cardNumber);
 	}
 
 	@Override
-	public List<CardTransactionInfo> getTransactions(Long uuid, String cardNumber) throws IllegalArgumentException {
-// TODO check uuid -> owner of cardNumber
-		List<CardTransactionInfo> transactions = DBManager.getTransactions(cardNumber);
-		logger.info(uuid + " запросил транзакции " + transactions);
+	public List<TransactionInfo> getTransactions(Long uuid, String cardNumber) 
+			throws IllegalArgumentException, SecurityViolationException 
+	{
+		if (!onLineClients.isUuidExist(uuid)) {
+			logger.warn("SECURITY VIOLATION: block operation from non-existent uuid detected");
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+		Integer clientId = onLineClients.getId(uuid);
+		String name = DBManager.getClientName(clientId);
+		Integer clientIdByCard;
+		
+		// Проверка наличия карты
+		try {
+			clientIdByCard = DBManager.getClientId(cardNumber);
+		} catch (Exception e) {
+			logger.warn("SECURITY VIOLATION: query transactions by client " + name + " with fake card number detected");
+			logger.warn(e.getMessage());
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+		
+		// Проверка принадлежности карты клиенту
+		if (clientIdByCard != clientId) {
+			logger.warn("SECURITY VIOLATION: query transactions by client " + name + " with fake card number detected");
+			throw new SecurityViolationException(
+					"Отклонено. Обратитесь в нашу службу безопасности за разъяснениями");
+		}
+
+		List<TransactionInfo> transactions = DBManager.getTransactions(cardNumber);
+		logger.info("клиент " + name + " запросил транзакции " + transactions);
 		return transactions;
 	}
 

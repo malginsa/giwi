@@ -5,14 +5,15 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import giwi.shared.CardInfo;
-import giwi.shared.CardTransactionInfo;
+import giwi.shared.PersonInfo;
+import giwi.shared.TransactionInfo;
 
 /**
  * The async counterpart of <code>GiwiService</code>.
  */
 public interface GiwiServiceAsync {
 
-	void signIn(String name, String password, AsyncCallback<Long> callback);
+	void signIn(String name, String password,	AsyncCallback<PersonInfo> asyncCallback);
 
 	void getCardInfo(Long uuid, AsyncCallback<List<CardInfo>> asyncCallback);
 
@@ -23,25 +24,10 @@ public interface GiwiServiceAsync {
 
 	void sendDoBlockCard(Long uuid, String cardNumber, AsyncCallback<Void> callback);
 
-	void getBlockedCards(AsyncCallback<List<String>> callback);
+	void getBlockedCards(Long uuid, AsyncCallback<List<String>> callback);
 	
-	void sendUnblocking(Long uuid, String cardNumber, AsyncCallback<Void> callback);
+	void sendDoUnblock(Long uuid, String cardNumber, AsyncCallback<Void> callback);
 	
-	void getTransactions(Long uuid, String cardNumber, AsyncCallback<List<CardTransactionInfo>> callback);
+	void getTransactions(Long uuid, String cardNumber, AsyncCallback<List<TransactionInfo>> callback);
 
-//	void getAccounts(Integer idClient, AsyncCallback<List<Account>> callback);
-//
-//	void sendTransaction(Integer idClient, String fromCard, 
-//			String toCard, Integer amount, AsyncCallback<Void> callback);
-//
-//	void sendIncrement(Integer uuid, String cardNumber, Integer amount,
-//			AsyncCallback<Void> asyncCallback);
-//
-//	void sendBlockCard(Integer uuid, String cardNumber, 
-//			AsyncCallback<Void> asyncCallback);
-//
-//	void getBlockedCards(AsyncCallback<List<Account>> asyncCallback);
-//
-//	void sendUnblocking(Integer uuid, String cardNumber, AsyncCallback<Void> asyncCallback);
-//
 }

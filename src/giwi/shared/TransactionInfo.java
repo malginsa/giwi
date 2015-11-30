@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
-public class CardTransactionInfo implements Serializable{
+public class TransactionInfo implements Serializable{
 
 	private static final long serialVersionUID = 5143763598593988899L;
 	
@@ -12,9 +12,9 @@ public class CardTransactionInfo implements Serializable{
 	private Date date;
 	private Time time;
 	
-	private CardTransactionInfo() {}
+	private TransactionInfo() {}
 	
-	public CardTransactionInfo(Integer amount, Date date, Time time) {
+	public TransactionInfo(Integer amount, Date date, Time time) {
 		this.amount = amount;
 		this.date = date;
 		this.time = time;

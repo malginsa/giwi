@@ -19,6 +19,7 @@ create table client (
 	);
 
 create table admin (
+	id integer primary key auto_increment,
 	name varchar(255),
 	password varchar(255)
 	);
@@ -34,8 +35,6 @@ create table card (
 	isBlocked bit,
 	account_id integer
 	);
-
-insert into admin values ("sysop", "1");
 
 insert into client values (1, "Askur", "1");
 insert into client values (2, "Embla", "1");
@@ -53,6 +52,11 @@ insert into card values ("1111111111111111", FALSE, 1);
 insert into card values ("1111111111111112", FALSE, 2);
 insert into card values ("2222222222222222", FALSE, 3);
 insert into card values ("3333333333333333", FALSE, 4);
+
+insert into admin values (1, "admin", "1");
+insert into admin values (2, "админ", "1");
+insert into admin values (3, "root", "1");
+insert into admin values (4, "sysop", "1");
 
 select card.number, card.isblocked, account.balance from account, card where account.client_id = 1 and account.id = card.account_id;
 

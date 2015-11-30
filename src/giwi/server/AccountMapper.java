@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Update;
 
 //import giwi.client.Account;
 import giwi.shared.CardInfo;
-import giwi.shared.CardTransactionInfo;
+import giwi.shared.TransactionInfo;
 
 public interface AccountMapper {
 
@@ -34,5 +34,5 @@ public interface AccountMapper {
 	Integer unblockCard(String cardNumber);
 
 	@Select("select transaction.amount, transaction.date, transaction.time from card, transaction where card.account_id = transaction.account_id and card.number = #{cardNumber}")
-	List<CardTransactionInfo> getTransactions(String cardNumber);
+	List<TransactionInfo> getTransactions(String cardNumber);
 }

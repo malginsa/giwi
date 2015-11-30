@@ -21,8 +21,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
-import giwi.client.CardInfoForm.LocaleConstants;
 import giwi.shared.CardInfo;
+import giwi.shared.PersonInfo;
 
 public class GwtGiwi implements EntryPoint {
 
@@ -36,6 +36,7 @@ public class GwtGiwi implements EntryPoint {
 		String unblockingInProcessMsg();
 		String cardIsUnblockedMsg();
 		String pleaseWaitMsg();
+		String SignOutDoneMsg();
 	}
 
 	private static LocaleConstants constants;
@@ -46,7 +47,7 @@ public class GwtGiwi implements EntryPoint {
 	}
 
 	public void signIn() {
-		
+
 		RootPanel.get().clear();
 
 		VerticalPanel verticalPanel = new VerticalPanel();
@@ -74,12 +75,12 @@ public class GwtGiwi implements EntryPoint {
 			public void onClick(ClickEvent event) {
 				okButton.setEnabled(false);
 				ClientImplDB.giwiService.signIn(nameTextBox.getText(), 
-					passwordTextBox.getText(), new AsyncCallback<Long>() {
+					passwordTextBox.getText(), new AsyncCallback<PersonInfo>() {
 						@Override
-						public void onSuccess(Long result) {
+						public void onSuccess(PersonInfo personInfo) {
 							ClientImplDB.clientName = nameTextBox.getText();
-							ClientImplDB.uuid = result;
-							if (0 == result) {
+							ClientImplDB.uuid = personInfo.getUuid();
+							if (personInfo.getStatus() == PersonInfo.Status.ADMIN) {
 								Window.alert(constants.signInAsAdminMsg());
 								adminPanel();
 							} else {
@@ -122,13 +123,14 @@ public class GwtGiwi implements EntryPoint {
 	private void adminPanel() { 
 
 		showProcessingPanel(constants.dataProcessingMsg());
-		ClientImplDB.giwiService.getBlockedCards(
+		ClientImplDB.giwiService.getBlockedCards(ClientImplDB.uuid,
 				new AsyncCallback<List<String>>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				RootPanel.get().clear();
 				RootPanel.get().add(new Label(caught.getMessage()));
 				RootPanel.get().add(new Label(constants.nothingToUnblockMsg()));
+				RootPanel.get().add(new Label(constants.SignOutDoneMsg()));
 			}
 			@Override
 			public void onSuccess(List<String> result) {
@@ -159,10 +161,10 @@ public class GwtGiwi implements EntryPoint {
 		cellList.setRowData(cardNumbers);
 		RootPanel.get().add(cellList);
 	}
-	
+
 	private void doUnblockCard(String CardNumber) {
 		showProcessingPanel(constants.unblockingInProcessMsg());
-		ClientImplDB.giwiService.sendUnblocking(ClientImplDB.uuid, CardNumber, 
+		ClientImplDB.giwiService.sendDoUnblock(ClientImplDB.uuid, CardNumber, 
 				new AsyncCallback<Void>() {
 			@Override
 			public void onFailure(Throwable caught) {

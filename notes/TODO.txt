@@ -1,29 +1,12 @@
 TODO
 
-uuid !=0 для админа
-private GiwiServiceImpl.Logger
-logger into separate class + логиорвать, логировать, и ещё раз логировать
+разделить админку и клиентский SignIn/Out интерфейсы
 client input validation, amount in TextBox - only digits
 длина строки < 80
-админов может быть несколько
-проверить наличие throws IllegalArgumentException в GiwiService, *Impl, DBManager;
-use ByePanel
-Panel -> UI
-status -> locale key constants
-CardInfoForm.card упразнить, обновлять только через RPC
 активна - зелёный, заблокирована - красный
-? упразнить CardDatabase
-ShowMorePagerPanel упрощённый вариант
-setters & getters in CardInfo
-админу имя клиента заблокированной карты
-_static_ final Logger logger
-OnLineClientDB -> singleton
-GiwiServiceImpl.signOut, OnLineClientDB.deleteClientId
+CardDB
 deleteClientId когда клиент закрыл окно браузера
-giwiService public -> private ; uuid, clientName -> private
-security check in ..Impl
-share constants
-в лог не номер клиента, а его имя
-SecurityExeption
-giwi DB -> git репозиторий
-IllegalArgumentExeption -> return null
+MySQL-базу в git репозиторий
+SecureRandom
+локализация серверной части
+SignIN/OUT админа отделить от клиента

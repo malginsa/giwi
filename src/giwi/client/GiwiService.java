@@ -6,7 +6,9 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import giwi.shared.CardInfo;
-import giwi.shared.CardTransactionInfo;
+import giwi.shared.PersonInfo;
+import giwi.shared.SecurityViolationException;
+import giwi.shared.TransactionInfo;
 
 /**
  * The client-side stub for the RPC service.
@@ -14,24 +16,23 @@ import giwi.shared.CardTransactionInfo;
 @RemoteServiceRelativePath("giwi")
 public interface GiwiService extends RemoteService {
 
-	Long signIn(String name, String password) 
-			throws IllegalArgumentException;
+	PersonInfo signIn(String name, String password) 
+			throws IllegalArgumentException, SecurityViolationException;
 
-	void signOut(Long uuid) 
-			throws IllegalArgumentException;
+	void signOut(Long uuid)	throws SecurityViolationException;
 
-	List<CardInfo> getCardInfo(Long uuid);
+	List<CardInfo> getCardInfo(Long uuid) throws IllegalArgumentException, SecurityViolationException;
 
 	void sendTransaction(Long uuid, String cardNumber, Integer amount) 
-			throws IllegalArgumentException;
+			throws IllegalArgumentException, SecurityViolationException;
 
 	void sendDoBlockCard(Long uuid, String cardNumber) 
-			throws IllegalArgumentException;
+			throws IllegalArgumentException, SecurityViolationException;
 
-	List<String> getBlockedCards() throws IllegalArgumentException;
+	List<String> getBlockedCards(Long uuid) throws IllegalArgumentException, SecurityViolationException;
 
-	void sendUnblocking(Long uuid, String cardNumber) throws IllegalArgumentException;
+	void sendDoUnblock(Long uuid, String cardNumber) throws IllegalArgumentException, SecurityViolationException;
 	
-	List<CardTransactionInfo> getTransactions(Long uuid, String cardNumber) throws IllegalArgumentException;
+	List<TransactionInfo> getTransactions(Long uuid, String cardNumber) throws IllegalArgumentException, SecurityViolationException;
 
 }
