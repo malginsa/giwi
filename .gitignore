@@ -1,6 +1,0 @@
-*.class
-*.jar
-*.log
-*.zip
-war/gwtgiwi/*
-gwt-unitCache/*
