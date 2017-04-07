@@ -11,10 +11,14 @@
 	<context:component-scan base-package="com.epam.giwi.mvc.controllers"/>
 	<context:component-scan base-package="com.epam.giwi.mvc.resolvers"/>
 
+    <!-- JSP/JSTL view resolver -->
+    <!--  view: "hello" -> /WEB-INF/pages/hello.jsp  -->
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/views/"/>  <!-- where JSP's are situated -->
+        <!-- Jstl support -->
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/views/"/>
 		<property name="suffix" value=".jsp"/>
 	</bean>
-	
+
 	<mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources>
 </beans>
